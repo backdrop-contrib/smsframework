@@ -1,6 +1,6 @@
 (function ($) {
 
-  Drupal.behaviors.smssendtophone = {
+  Backdrop.behaviors.smssendtophone = {
     /**
      * Adds javascript behavior to open sms-sendtophone form in a thickbox.
      *

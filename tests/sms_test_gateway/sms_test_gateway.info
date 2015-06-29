@@ -3,4 +3,5 @@ description = Support module for sms gateway testing.
 hidden = 1
 package: Testing
 version: VERSION
-core = 7.x
+backdrop = 1.x
+type = module

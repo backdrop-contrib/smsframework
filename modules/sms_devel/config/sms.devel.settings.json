@@ -1,0 +1,10 @@
+{
+    "_config_name": "sms.devel.settings",
+    "sms_devel_virtualgw_autoreply_enabled": false,
+    "sms_devel_virtualgw_autoreply_format": "echo: {message}",
+    "sms_devel_virtualgw_receipts_enabled": false,
+    "sms_devel_virtualgw_logfield_refresh": 1,
+    "sms_devel_virtualgw_logfield_showsent": 1,
+    "sms_devel_virtualgw_logfield_showreceived": 1,
+    "sms_devel_virtualgw_logfield_showreceipts": 1
+}

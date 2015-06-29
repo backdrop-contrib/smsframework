@@ -14,7 +14,7 @@
 function sms_track_views_handlers() {
   return array(
     'info' => array(
-      'path' => drupal_get_path('module', 'sms_track') . '/views',
+      'path' => backdrop_get_path('module', 'sms_track') . '/views',
     ),
     'handlers' => array(
       'sms_track_handler_field_direction' => array(

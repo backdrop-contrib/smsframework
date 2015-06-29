@@ -53,7 +53,7 @@ function sms_user_views_data() {
 function sms_user_views_handlers() {
   return array(
     'info' => array(
-      'path' => drupal_get_path('module', 'sms_user') . '/includes',
+      'path' => backdrop_get_path('module', 'sms_user') . '/includes',
     ),
     'handlers' => array(
       'sms_user_handler_field_number' => array(

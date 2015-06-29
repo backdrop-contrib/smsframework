@@ -134,9 +134,10 @@ function sms_devel_virtualgw_log_insert($type, $number = '', $message = '', $opt
  *   An array of options.
  */
 function sms_devel_virtualgw_sendlogic($number, $message, $options) {
-  $autoreply_enabled = variable_get('sms_devel_virtualgw_autoreply_enabled', FALSE);
-  $autoreply_format  = variable_get('sms_devel_virtualgw_autoreply_format',   '');
-  $receipts_enabled  = variable_get('sms_devel_virtualgw_receipts_enabled',   FALSE);
+  $config = config('sms.devel.settings');
+  $autoreply_enabled = $config->get('sms_devel_virtualgw_autoreply_enabled');
+  $autoreply_format  = $config->get('sms_devel_virtualgw_autoreply_format');
+  $receipts_enabled  = $config->get('sms_devel_virtualgw_receipts_enabled');
 
   if ($autoreply_enabled) {
     // TODO Figure out the tokens logic
@@ -220,17 +221,17 @@ function sms_devel_virtualgw_js_getactivity() {
   $form['#programmed'] = FALSE;
   $form_state['post'] = $_POST;
   // Build, validate and if possible, submit the form.
-  drupal_process_form($form_id, $form, $form_state);
+  backdrop_process_form($form_id, $form, $form_state);
   // This call recreates the form relying solely on the form_state that the
-  // drupal_process_form set up.
-  $form = drupal_rebuild_form($form_id, $form_state, $args, $form_build_id);
+  // backdrop_process_form set up.
+  $form = backdrop_rebuild_form($form_id, $form_state, $args, $form_build_id);
   // Render the new output.
   $logfield = $form['sms_devel_virtualgw_log']['sms_devel_virtualgw_logfield'];
   $logfield['#value'] = $output;
   unset($logfield['#prefix'], $logfield['#suffix']); // Prevent duplicate wrappers.
-  $output = drupal_render($logfield);
+  $output = backdrop_render($logfield);
 
-  drupal_json_output(array('status' => TRUE, 'data' => $output));
+  backdrop_json_output(array('status' => TRUE, 'data' => $output));
 }
 
 
@@ -238,7 +239,7 @@ function sms_devel_virtualgw_js_getactivity() {
  * Performs an ajax send to virtual gateway.
  */
 function sms_devel_virtualgw_ahah_send() {
-  $result = drupal_http_request(
+  $result = backdrop_http_request(
     url('sms/virtualgw/receiver', array('absolute' => TRUE)), array('headers' => array('Content-Type' => 'application/x-www-form-urlencoded'), 'method' => 'POST', 'data' => http_build_query(array(
       'number' => $_POST['sms_devel_virtualgw_from'],
       'message' => $_POST['sms_devel_virtualgw_message'],
@@ -246,5 +247,5 @@ function sms_devel_virtualgw_ahah_send() {
     ), '', '&')));
 
   // Return a good status
-  drupal_json_output(array('status' => TRUE));
+  backdrop_json_output(array('status' => TRUE));
 }

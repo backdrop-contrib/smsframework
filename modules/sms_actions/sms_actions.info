@@ -3,5 +3,5 @@ description = "Provides an action for sending outgoing messages and the ability 
 package = SMS Framework
 dependencies[] = sms
 dependencies[] = trigger
-core = 7.x
-files[] = sms_actions.test
+backdrop = 1.x
+type = module

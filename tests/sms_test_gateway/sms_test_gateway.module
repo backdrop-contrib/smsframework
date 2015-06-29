@@ -6,6 +6,18 @@
  */
 
 /**
+ * Implements hook_config_info().
+ */
+function sms_test_gateway_config_info()
+{
+  $prefixes['sms.test_gateway.settings'] = array(
+    'label' => t('SMS Test Gateway settings'),
+    'group' => t('Configuration'),
+  );
+  return $prefixes;
+}
+
+/**
  * Implements hook_gateway_info().
  */
 function sms_test_gateway_gateway_info() {
@@ -26,28 +38,28 @@ function sms_test_gateway_gateway_info() {
  * Send callback
  */
 function sms_test_gateway_send($number = NULL, $message = NULL, $options = array()) {
-  $result = &drupal_static('sms_test_gateway_result');
+  $result = &backdrop_static('sms_test_gateway_result');
 
   if (!is_null($number) && !is_null($message)) {
     $result['number'] = $number;
     $result['message'] = $message;
     $result['options'] = $options;
-    variable_set('sms_test_gateway_result', $result);
+    config_set('sms.test_gateway.settings', 'sms_test_gateway_result', $result);
   }
   return array('status' => TRUE, 'result' => $result);
 }
 
 function sms_test_gateway_result($reset = FALSE) {
-  $result = &drupal_static(__FUNCTION__);
+  $result = &backdrop_static(__FUNCTION__);
 
   if (!isset($result)) {
-    $result = variable_get('sms_test_gateway_result', array());
+    $result = config_get('sms.sms_test_gateway.settings', 'sms_test_gateway_result');
   }
 
 
   if ($reset) {
-    variable_del('sms_test_gateway_result');
-    drupal_static_reset(__FUNCTION__);
+    config_set('sms.test_gateway.settings', 'sms_test_gateway_result', NULL);
+    backdrop_static_reset(__FUNCTION__);
   }
   return $result;
 }
@@ -58,27 +70,27 @@ function sms_test_gateway_result($reset = FALSE) {
 function sms_test_gateway_sms_incoming($op, $number, $message, $options) {
   // Save incoming result for later retrieval.
   $key = 'sms_test_gateway_get_incoming' . $op;
-  $result = &drupal_static($key);
+  $result = &backdrop_static($key);
 
   if (!is_null($number) && !is_null($message)) {
     $result['number'] = $number;
     $result['message'] = $message;
     $result['options'] = $options;
-    variable_set($key, $result);
+    config_set('sms.test_gateway.settings', $key, $result);
   }
 }
 
 function sms_test_gateway_get_incoming($op, $reset = FALSE) {
   $key = __FUNCTION__ . $op;
-  $result = &drupal_static($key);
+  $result = &backdrop_static($key);
 
   if (!isset($result)) {
-    $result = variable_get($key, array());
+    $result = config_get('sms.sms_test_gateway.settings', $key);
   }
 
   if ($reset) {
-    variable_del($key);
-    drupal_static_reset($key);
+    config_set('sms.test_gateway.settings', $key, NULL);
+    backdrop_static_reset($key);
   }
   return $result;
 }
@@ -97,7 +109,7 @@ function sms_test_gateway_config_form($configuration) {
   $form['ssl'] = array(
     '#type' => 'checkbox',
     '#title' => t('Use SSL Encyption'),
-    '#description' => t('Drupal\'s built-in HTTP client only supports SSL on PHP 4.3 compiled with OpenSSL.'),
+    '#description' => t('Backdrop\'s built-in HTTP client only supports SSL on PHP 4.3 compiled with OpenSSL.'),
     '#default_value' => $configuration['ssl'] ?: '',
   );
   $form['username'] = array(

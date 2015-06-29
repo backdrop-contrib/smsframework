@@ -12,9 +12,9 @@ sms_bootstrap_check_vars();
 
 // If it is route for incoming SMS, and bootstrap route is enabled, handle it
 // here.
-if (variable_get('sms_bootstrap_enabled', FALSE) && ($route = sms_bootstrap_load_route())) {
-  // Yes it needs standard Drupal core dir structure.
-  require_once DRUPAL_ROOT . '/modules/system/system.queue.inc';
+if (config_get('sms.settings', 'sms_bootstrap_enabled') && ($route = sms_bootstrap_load_route())) {
+  // Yes it needs standard Backdrop core dir structure.
+  require_once BACKDROP_ROOT . '/modules/system/system.queue.inc';
   // Also if you move this file relative to the rest of sms framework.
   require dirname(__FILE__) . '/../sms.parser.inc';
   // Include the absolute path to the file including the SMS provider class.
@@ -53,7 +53,7 @@ if (variable_get('sms_bootstrap_enabled', FALSE) && ($route = sms_bootstrap_load
  * Check to see if the request path is a route register to be handled.
  */
 function sms_bootstrap_load_route() {
-  if (! $routes = variable_get('sms_bootstrap_routes', '')) {
+  if (! $routes = config_get('sms.settings', 'sms_bootstrap_routes')) {
     // No routes defined. Allow core to continue.
     return FALSE;
   }
@@ -69,27 +69,27 @@ function sms_bootstrap_load_route() {
  * Load and return the appropriate queue.
  *
  * If an alternate queue system is configured. Ensure a required include
- * file is loaded. Use Drupal variables 'queue_class' . $name, or
- * 'queue_default_class' to define the implementation of DrupalQueueInterface
+ * file is loaded. Use Backdrop variables 'queue_class' . $name, or
+ * 'queue_default_class' to define the implementation of BackdropQueueInterface
  * to load.
  *
  * Set 'sms_bootstrap_queue' in settings.php if you don't rely on the db.
  */
 function sms_bootstrap_load_queue() {
- $queue_info = variable_get('sms_bootstrap_queue', array());
+ $queue_info = config_get('sms.settings', 'sms_bootstrap_queue');
   if (empty($queue_info['require db']) || $queue_info['required db']) {
     // The queue requires the db to be bootstraped, even if all the
     // variables have been supplied so far from settings.php.
-    // Default DrupalSystemQueue requires DB. Set your $queue_info['require db']
+    // Default BackdropSystemQueue requires DB. Set your $queue_info['require db']
     // to FALSE if you don't need it.
-    drupal_bootstrap(DRUPAL_BOOTSTRAP_DATABASE, FALSE);
+    backdrop_bootstrap(BACKDROP_BOOTSTRAP_DATABASE, FALSE);
   }
   if (! empty($queue_info['inc'])) {
     require($queue_info['inc']);
   }
   $name = empty($queue_info['name']) ? 'sms_incoming' : $queue_info['name'];
   $reliable = empty($queue_info['reliable']) ? TRUE : $queue_info['reliable'];
-  $queue = DrupalQueue::get($name, $reliable);
+  $queue = BackdropQueue::get($name, $reliable);
   $queue->createQueue();
 
   return $queue;
@@ -102,8 +102,9 @@ function sms_bootstrap_load_queue() {
  * in your settings.php file.
  */
 function sms_bootstrap_check_vars() {
-  if (variable_get('sms_bootstrap_routes', '') === '' || variable_get('sms_bootstrap_enabled', '') === '') {
-    drupal_bootstrap(DRUPAL_BOOTSTRAP_VARIABLES, FALSE);
+  $config = config('sms.settings');
+  if ($config->get('sms_bootstrap_routes') === '' || $config->get('sms_bootstrap_enabled') === '') {
+    backdrop_bootstrap(BACKDROP_BOOTSTRAP_VARIABLES, FALSE);
   }
 }
 
@@ -116,8 +117,8 @@ function sms_bootstrap_check_vars() {
 function sms_bootstrap_response($response) {
   // Allow SMS provider to add content to response.
   foreach ($response['headers'] as $name => $value) {
-    drupal_add_http_header($name, $value);
+    backdrop_add_http_header($name, $value);
   }
-  drupal_send_headers();
+  backdrop_send_headers();
   print $response['body'];
 }

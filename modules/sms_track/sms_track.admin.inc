@@ -14,12 +14,14 @@
  * Form builder for sms_track settings form.
  *
  * @return
- *   Drupal form array.
+ *   Backdrop form array.
  *
  * @see sms_track_settings_form_submit()
  */
 
 function sms_track_settings_form() {
+  $config = config('sms.track.settings');
+  
   // Archive section.
   $form['archive'] = array(
     '#type'  => 'fieldset',
@@ -30,7 +32,7 @@ function sms_track_settings_form() {
   $form['archive']['archive_dir'] = array(
     '#type'  => 'select',
     '#title' => 'Archive mode',
-    '#default_value' => variable_get('sms_track_archive_dir', SMS_DIR_NONE),
+    '#default_value' => $config->get('sms_track_archive_dir'),
     '#options' => array(
       SMS_DIR_NONE => 'No archiving [default]',
       SMS_DIR_OUT  => 'Record outgoing messages only',
@@ -44,7 +46,7 @@ function sms_track_settings_form() {
     '#title' => 'Purge messages after n days',
     '#size'          => 3,
     '#maxlength'     => 3,
-    '#default_value' => variable_get('sms_track_archive_max_age_days', 0),
+    '#default_value' => $config->get('sms_track_archive_max_age_days'),
     '#description'   => 'Set to 0 (zero) to disable archive purge. This will only work if you have cron configured correctly.',
   );
 
@@ -62,12 +64,14 @@ function sms_track_settings_form() {
  * @see sms_track_settings_form
  */
 function sms_track_settings_form_submit($form, &$form_state) {
-  $archive_dir_old = variable_get('sms_track_archive_dir', SMS_DIR_NONE);
+  $config = config('sms.track.settings');
+
+  $archive_dir_old = $config->get('sms_track_archive_dir');
   $archive_dir = $form_state['values']['archive_dir'];
-  variable_set('sms_track_archive_dir', $archive_dir);
+  $config->set('sms_track_archive_dir', $archive_dir);
 
   $archive_max_age_days = $form_state['values']['archive_max_age_days'];
-  variable_set('sms_track_archive_max_age_days', $archive_max_age_days);
+  $config->set('sms_track_archive_max_age_days', $archive_max_age_days);
 
   // Trigger watchdog messages.
   if ($archive_dir_old && ! $archive_dir) {
@@ -77,7 +81,7 @@ function sms_track_settings_form_submit($form, &$form_state) {
     watchdog('sms_track', 'SMS Tracking archive collector enabled');
   }
 
-  drupal_set_message(t('Settings saved.'));
+  backdrop_set_message(t('Settings saved.'));
 }
 
 

@@ -1,5 +1,5 @@
 (function ($) {
-  Drupal.behaviors.smsUser = {
+  Backdrop.behaviors.smsUser = {
     /**
      * Adds javascript behavior to display the number of characters typed in
      * sms_user actions form.

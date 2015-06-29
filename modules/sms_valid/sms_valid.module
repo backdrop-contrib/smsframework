@@ -2,11 +2,23 @@
 
 /**
  * @file
- * Number validation feature module for Drupal SMS Framework.
+ * Number validation feature module for Backdrop SMS Framework.
  *
  * @package sms
  * @subpackage sms_valid
  */
+
+/**
+ * Implements hook_config_info().
+ */
+function sms_valid_config_info()
+{
+  $prefixes['sms.valid.settings'] = array(
+    'label' => t('SMS Valid settings'),
+    'group' => t('Configuration'),
+  );
+  return $prefixes;
+}
 
 /**
  * Implements hook_sms_validate_number().
@@ -22,7 +34,7 @@
  *   NULL if validation succeeded. Error message if failed.
  */
 function sms_valid_sms_validate_number($number, $options) {
-  if (variable_get('sms_valid_use_rulesets', FALSE) || array_key_exists('test', $options)) {
+  if (config_get('sms.valid.settings', 'sms_valid_use_rulesets') || array_key_exists('test', $options)) {
     $result = sms_valid_validate($number, $options);
 
     if ($result['pass'] === false || !empty($result['errors'])) {
@@ -45,7 +57,7 @@ function sms_valid_menu() {
   $items['admin/smsframework/validation'] = array(
     'title' => 'Number validation',
     'description' => 'Configure number validation and rulesets.',
-    'page callback' => 'drupal_get_form',
+    'page callback' => 'backdrop_get_form',
     'page arguments' => array('sms_valid_admin_settings_form', NULL),
     'access arguments' => array('administer smsframework'),
     'file' => 'sms_valid.admin.inc',
@@ -59,7 +71,7 @@ function sms_valid_menu() {
 
   $items['admin/smsframework/validation/rulesets'] = array(
     'title' => 'Rulesets',
-    'page callback' => 'drupal_get_form',
+    'page callback' => 'backdrop_get_form',
     'page arguments' => array('sms_valid_admin_rulesets_form', NULL),
     'access arguments' => array('administer smsframework'),
     'type' => MENU_LOCAL_TASK,
@@ -69,7 +81,7 @@ function sms_valid_menu() {
 
   $items['admin/smsframework/validation/ruleset'] = array(
     'title' => 'Add/Edit ruleset',
-    'page callback' => 'drupal_get_form',
+    'page callback' => 'backdrop_get_form',
     'page arguments' => array('sms_valid_admin_ruleset_form'),
     'access arguments' => array('administer smsframework'),
     'type' => MENU_LOCAL_TASK,
@@ -79,7 +91,7 @@ function sms_valid_menu() {
 
   $items['admin/smsframework/validation/ruleset/%'] = array(
     'title' => 'Edit ruleset',
-    'page callback' => 'drupal_get_form',
+    'page callback' => 'backdrop_get_form',
     'page arguments' => array('sms_valid_admin_ruleset_form', 4),
     'access arguments' => array('administer smsframework'),
     'type' => MENU_CALLBACK,
@@ -89,7 +101,7 @@ function sms_valid_menu() {
 
   $items['admin/smsframework/validation/test'] = array(
     'title' => 'Test validation',
-    'page callback' => 'drupal_get_form',
+    'page callback' => 'backdrop_get_form',
     'page arguments' => array('sms_valid_admin_test_form', NULL),
     'access arguments' => array('administer smsframework'),
     'type' => MENU_LOCAL_TASK,
@@ -171,8 +183,8 @@ function sms_valid_get_ruleset_for_number($number) {
 
   // Make an array of potential prefixes from the given number
   $potential_prefixes = array();
-  for ($i = 0; $i < drupal_strlen($number); $i++) {
-    $potential_prefixes[] = drupal_substr($number, 0, $i + 1);
+  for ($i = 0; $i < backdrop_strlen($number); $i++) {
+    $potential_prefixes[] = backdrop_substr($number, 0, $i + 1);
   }
 
   $best_ruleset = NULL;
@@ -440,7 +452,7 @@ function sms_valid_get_rulesets_for_form($include_null_option = FALSE) {
  *   true if this is a local number, false otherwise.
  */
 function sms_valid_is_local_number($number) {
-  $prefix = variable_get('sms_valid_local_number_prefix', '0');
+  $prefix = config_get('sms.valid.settings', 'sms_valid_local_number_prefix');
   // A blank prefix string makes this return false.
   if ($prefix !== '' && preg_match("/^$prefix/", $number)) {
     return TRUE;
@@ -478,13 +490,15 @@ function sms_valid_validate($number, $options = array()) {
 
   // Set the default direction if not specified in options.
   $dir = (array_key_exists('dir', $options)) ? $options['dir'] : SMS_DIR_OUT;
-
-  $use_global_ruleset   = variable_get('sms_valid_use_global_ruleset',   FALSE);
-  $global_ruleset       = variable_get('sms_valid_global_ruleset',       '64');
-  $local_number_prefix  = variable_get('sms_valid_local_number_prefix',  '0');
-  $local_number_ruleset = variable_get('sms_valid_local_number_ruleset', '64');
-  $last_resort_enabled  = variable_get('sms_valid_last_resort_enabled',  FALSE);
-  $last_resort_ruleset  = variable_get('sms_valid_last_resort_ruleset',  NULL);
+  
+  $config = config('sms.valid.settings');
+  
+  $use_global_ruleset   = $config->get('sms_valid_use_global_ruleset');
+  $global_ruleset       = $config->get('sms_valid_global_ruleset');
+  $local_number_prefix  = $config->get('sms_valid_local_number_prefix');
+  $local_number_ruleset = $config->get('sms_valid_local_number_ruleset');
+  $last_resort_enabled  = $config->get('sms_valid_last_resort_enabled');
+  $last_resort_ruleset  = $config->get('sms_valid_last_resort_ruleset');
 
   // Check if we should use a specific ruleset prefix.
   if (array_key_exists('prefix', $options) && $options['prefix'] >= 0) {

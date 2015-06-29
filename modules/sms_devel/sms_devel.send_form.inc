@@ -60,7 +60,7 @@ function sms_devel_send_form_submit($form, &$form_state) {
   // Display a message to the user.
   $number  = $form_state['values']['number'];
   $message = $form_state['values']['message'];
-  drupal_set_message(check_plain(t("Form submitted ok for number $number and message: $message")));
+  backdrop_set_message(check_plain(t("Form submitted ok for number $number and message: $message")));
 }
 
 /**
@@ -73,5 +73,5 @@ function sms_devel_receive_form_submit($form, &$form_state) {
   $number  = $form_state['values']['number'];
   $message = $form_state['values']['message'];
   sms_incoming($number, $message);
-  drupal_set_message(check_plain(t("Message received from number $number and message: $message")));
+  backdrop_set_message(check_plain(t("Message received from number $number and message: $message")));
 }

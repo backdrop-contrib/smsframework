@@ -2,19 +2,30 @@
 
 /**
  * @file
- * Development and testing tools for Drupal SMS Framework.
+ * Development and testing tools for Backdrop SMS Framework.
  *
  * @package sms
  * @subpackage sms_devel
  */
 /*
-include DRUPAL_ROOT . '/' . 'sms_devel.send_form.inc';
-include DRUPAL_ROOT . '/' . 'sms_devel.virtualgw.inc';
-include DRUPAL_ROOT . '/' . 'sms_devel.virtualgw.admin.inc';*/
+include BACKDROP_ROOT . '/' . 'sms_devel.send_form.inc';
+include BACKDROP_ROOT . '/' . 'sms_devel.virtualgw.inc';
+include BACKDROP_ROOT . '/' . 'sms_devel.virtualgw.admin.inc';*/
 //include 'sms_devel.send_form.inc';
 include 'sms_devel.virtualgw.inc';
 //include 'sms_devel.virtualgw.admin.inc';
 
+/**
+ * Implements hook_config_info().
+ */
+function sms_devel_config_info()
+{
+  $prefixes['sms.devel.settings'] = array(
+    'label' => t('SMS Devel settings'),
+    'group' => t('Configuration'),
+  );
+  return $prefixes;
+}
 
 /**
  * Implements hook_menu().
@@ -25,7 +36,7 @@ function sms_devel_menu() {
   $items['admin/smsframework/devel'] = array(
     'title' => 'Devel',
     'description' => 'Development and testing tools.',
-    'page callback' => 'drupal_get_form',
+    'page callback' => 'backdrop_get_form',
     'page arguments' => array('sms_devel_send_form', NULL),
     'access arguments' => array('administer smsframework'),
     'file' => 'sms_devel.send_form.inc',
@@ -39,7 +50,7 @@ function sms_devel_menu() {
 
   $items['admin/smsframework/devel/virtualgw'] = array(
     'title' => 'Virtual gateway',
-    'page callback' => 'drupal_get_form',
+    'page callback' => 'backdrop_get_form',
     'page arguments' => array('sms_devel_virtualgw_form', NULL),
     'access arguments' => array('administer smsframework'),
     'type' => MENU_LOCAL_TASK,

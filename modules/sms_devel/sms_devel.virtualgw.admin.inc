@@ -16,7 +16,7 @@
  *   Array containing configuration information.
  *
  * @return
- *   Drupal form array.
+ *   Backdrop form array.
  *
  * @see sms_devel_virtualgw_form()
  */
@@ -34,6 +34,7 @@ function sms_devel_virtualgw_settings_form($configuration) {
  * Form constructor for the virtual gateway configuration.
  */
 function sms_devel_virtualgw_form($form, &$form_state) {
+  $config = config('sms.devel.settings');
   $form['sms_devel_virtualgw_settings'] = array(
     '#type' => 'fieldset',
     '#title' => t('Settings'),
@@ -43,20 +44,20 @@ function sms_devel_virtualgw_form($form, &$form_state) {
   $form['sms_devel_virtualgw_settings']['sms_devel_virtualgw_autoreply_enabled'] = array(
     '#type' => 'checkbox',
     '#title' => t('Enable autoreply'),
-    '#default_value' => variable_get('sms_devel_virtualgw_autoreply_enabled', FALSE),
+    '#default_value' => $config->get('sms_devel_virtualgw_autoreply_enabled'),
   );
   $form['sms_devel_virtualgw_settings']['sms_devel_virtualgw_autoreply_format'] = array(
     '#type' => 'textarea',
     '#rows' => 4,
     '#cols' => 40,
     '#resizable' => FALSE,
-    '#default_value' => variable_get('sms_devel_virtualgw_autoreply_format', 'echo: {message}'),
+    '#default_value' => $config->get('sms_devel_virtualgw_autoreply_format'),
     '#description' => t('If enabled then the gateway will reply to your messages through sms_incoming()<br />You may use these tokens: {number} {gw_number} {message} {reference}'),
   );
   $form['sms_devel_virtualgw_settings']['sms_devel_virtualgw_receipts_enabled'] = array(
     '#type' => 'checkbox',
     '#title' => t('Enable receipts'),
-    '#default_value' => variable_get('sms_devel_virtualgw_receipts_enabled', FALSE),
+    '#default_value' => $config->get('sms_devel_virtualgw_receipts_enabled'),
     '#description' => t('If enabled then the gateway will provide a message receipt through sms_receipt()'),
   );
   $form['sms_devel_virtualgw_settings']['submit'] = array(
@@ -111,23 +112,23 @@ function sms_devel_virtualgw_form($form, &$form_state) {
   $form['sms_devel_virtualgw_log']['sms_devel_virtualgw_logfield_refresh'] = array(
     '#type' => 'checkbox',
     '#title' => t('Refresh the logfield'),
-    '#default_value' => (variable_get('sms_devel_virtualgw_logfield_refresh', 1)) ? 1 : 0,
+    '#default_value' => ($config->get('sms_devel_virtualgw_logfield_refresh')) ? 1 : 0,
     // onchange="toggleRefresh(this.checked);"
   );
   $form['sms_devel_virtualgw_log']['sms_devel_virtualgw_logfield_showsent'] = array(
     '#type' => 'checkbox',
     '#title' => t('Show sent messages'),
-    '#default_value' => (variable_get('sms_devel_virtualgw_logfield_showsent', 1)) ? 1 : 0,
+    '#default_value' => ($config->get('sms_devel_virtualgw_logfield_showsent')) ? 1 : 0,
   );
   $form['sms_devel_virtualgw_log']['sms_devel_virtualgw_logfield_showreceived'] = array(
     '#type' => 'checkbox',
     '#title' => t('Show received messages'),
-    '#default_value' => (variable_get('sms_devel_virtualgw_logfield_showreceived', 1)) ? 1 : 0,
+    '#default_value' => ($config->get('sms_devel_virtualgw_logfield_showreceived')) ? 1 : 0,
   );
   $form['sms_devel_virtualgw_log']['sms_devel_virtualgw_logfield_showreceipts'] = array(
     '#type' => 'checkbox',
     '#title' => t('Show message receipts'),
-    '#default_value' => (variable_get('sms_devel_virtualgw_logfield_showreceipts', 1)) ? 1 : 0,
+    '#default_value' => ($config->get('sms_devel_virtualgw_logfield_showreceipts')) ? 1 : 0,
   );
   $form['sms_devel_virtualgw_log']['sms_devel_virtualgw_logfield_lines'] = array(
     '#type' => 'textfield',
@@ -173,12 +174,14 @@ function sms_devel_virtualgw_form($form, &$form_state) {
  * @see sms_devel_virtualgw_form()
  */
 function sms_devel_virtualgw_form_save_settings($form, &$form_state) {
-  variable_set('sms_devel_virtualgw_autoreply_enabled',
+  $config = config('sms.devel.settings');
+  $config->set('sms_devel_virtualgw_autoreply_enabled',
     $form_state['values']['sms_devel_virtualgw_autoreply_enabled']);
-  variable_set('sms_devel_virtualgw_autoreply_format',
+  $config->set('sms_devel_virtualgw_autoreply_format',
     $form_state['values']['sms_devel_virtualgw_autoreply_format']);
-  variable_set('sms_devel_virtualgw_receipts_enabled',
+  $config->set('sms_devel_virtualgw_receipts_enabled',
     $form_state['values']['sms_devel_virtualgw_receipts_enabled']);
+  $config->save();
 }
 
 

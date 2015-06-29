@@ -1,0 +1,60 @@
+[SmsFrameworkWebTest]
+name = SMS Framework tests
+description = Provides integration tests for the SMS Framework.
+group = SMS Framework
+file = sms.module.test
+
+[SmsContainsKeywordConditionTestCase]
+name = SMS Contains Keyword Condition test
+description = Provides tests for the SMS contains keyword condition.
+group = SMS Framework
+file = sms.rules.test
+
+[SmsActionWebTest]
+name = SMS Action Web test
+description = Provides integration tests for the sms_action module.
+group = SMS Framework
+file = sms_actions.test
+
+[SmsBlastWebTest]
+name = SMS Blast Web test
+description = Provides integration tests for the sms_blast module.
+group = SMS Framework
+file = sms_blast.test
+
+[SmsDevelTestSendFormTestCase]
+name = SMS Devel Send Form test
+description = Provides tests for the SMS Devel Test Send Form.
+group = SMS Framework
+file = sms_devel.test
+
+[SmsSendToPhoneWebTest]
+name = SMS SendToPhone test
+description = Tests the SMS SendToPhone functionality.
+group = SMS Framework
+file = sms_sendtophone.test
+
+[SmsTrackArchiveTestCase]
+name = SMS Track test
+description = Tests the SMS Track functionality.
+group = SMS Framework
+file = sms_track.test
+
+[SmsUserRulesWebTestCase]
+name = SMS User Rules test
+description = Tests the SMS User Rules functionality.
+group = SMS Framework
+file = sms_user.rules.test
+
+[SmsUserWebTest]
+name = SMS User test
+description = Provides integration tests for the sms_user module.
+group = SMS Framework
+file = sms_user.test
+
+[SmsValidWebTest]
+name = SMS Valid test
+description = Provides integration tests for the sms_valid module.
+group = SMS Framework
+file = sms_valid.test
+

@@ -19,8 +19,10 @@
  * @ingroup forms
  */
 function sms_valid_admin_settings_form($form, &$form_state, $prefix = 64) {
-  $use_rulesets = variable_get('sms_valid_use_rulesets', FALSE);
-  $use_global_ruleset = variable_get('sms_valid_use_global_ruleset', FALSE);
+  $config = config('sms.valid.settings');
+
+  $use_rulesets = $config->get('sms_valid_use_rulesets');
+  $use_global_ruleset = $config->get('sms_valid_use_global_ruleset');
 
   // Mode selector.
   if ($use_rulesets) {
@@ -58,7 +60,7 @@ function sms_valid_admin_settings_form($form, &$form_state, $prefix = 64) {
     '#type' => 'select',
     '#title' => t('Ruleset to use as the global ruleset'),
     '#options' => sms_valid_get_rulesets_for_form(),
-    '#default_value' => variable_get('sms_valid_global_ruleset', $prefix),
+    '#default_value' => $config->get('sms_valid_global_ruleset'),
   );
 
   // Local number ruleset section.
@@ -79,7 +81,7 @@ function sms_valid_admin_settings_form($form, &$form_state, $prefix = 64) {
     '#title' => t('Prefix that identifies a local number'),
     '#size' => 8,
     '#maxlength' => 20,
-    '#default_value' => variable_get('sms_valid_local_number_prefix', 0),
+    '#default_value' => $config->get('sms_valid_local_number_prefix'),
     '#description' => 'Set to blank to disable local number identification.',
     '#disabled' => ($use_global_ruleset) ? TRUE : FALSE,
   );
@@ -88,7 +90,7 @@ function sms_valid_admin_settings_form($form, &$form_state, $prefix = 64) {
     '#type' => 'select',
     '#title' => t('Default ruleset to try for local numbers'),
     '#options' => sms_valid_get_rulesets_for_form(),
-    '#default_value' => variable_get('sms_valid_local_number_ruleset', $prefix),
+    '#default_value' => $config->get('sms_valid_local_number_ruleset'),
     '#description' => 'This identifies the default ruleset that will be used for local numbers.',
     '#disabled' => ($use_global_ruleset) ? TRUE : FALSE,
   );
@@ -109,7 +111,7 @@ function sms_valid_admin_settings_form($form, &$form_state, $prefix = 64) {
   $form['last']['last_resort_enabled'] = array(
     '#type' => 'checkbox',
     '#title' => t('Use last resort ruleset'),
-    '#default_value' => variable_get('sms_valid_last_resort_enabled', FALSE),
+    '#default_value' => $config->get('sms_valid_last_resort_enabled'),
     '#disabled' => ($use_global_ruleset) ? TRUE : FALSE,
   );
 
@@ -117,7 +119,7 @@ function sms_valid_admin_settings_form($form, &$form_state, $prefix = 64) {
     '#type' => 'select',
     '#title' => t('Ruleset to try if the ruleset prefix cannot be identified from the number'),
     '#options' => sms_valid_get_rulesets_for_form(),
-    '#default_value' => variable_get('sms_valid_last_resort_ruleset', $prefix),
+    '#default_value' => $config->get('sms_valid_last_resort_ruleset'),
     '#description' => 'This only works if you have selected the checkbox above.',
     '#disabled' => ($use_global_ruleset) ? TRUE : FALSE,
   );
@@ -146,15 +148,17 @@ function sms_valid_admin_settings_form_submit(&$form, $form_state) {
   $last_resort_enabled  = $form_state['values']['last_resort_enabled'];
   $last_resort_ruleset  = $form_state['values']['last_resort_ruleset'];
 
-  variable_set('sms_valid_use_rulesets',         $use_rulesets);
-  variable_set('sms_valid_use_global_ruleset',   $use_global_ruleset);
-  variable_set('sms_valid_global_ruleset',       $global_ruleset);
-  variable_set('sms_valid_local_number_prefix',  $local_number_prefix);
-  variable_set('sms_valid_local_number_ruleset', $local_number_ruleset);
-  variable_set('sms_valid_last_resort_enabled',  $last_resort_enabled);
-  variable_set('sms_valid_last_resort_ruleset',  $last_resort_ruleset);
+  $config = config('sms.valid.settings');
+  $config->set('sms_valid_use_rulesets',         $use_rulesets);
+  $config->set('sms_valid_use_global_ruleset',   $use_global_ruleset);
+  $config->set('sms_valid_global_ruleset',       $global_ruleset);
+  $config->set('sms_valid_local_number_prefix',  $local_number_prefix);
+  $config->set('sms_valid_local_number_ruleset', $local_number_ruleset);
+  $config->set('sms_valid_last_resort_enabled',  $last_resort_enabled);
+  $config->set('sms_valid_last_resort_ruleset',  $last_resort_ruleset);
+  $config->save();
 
-  drupal_set_message(t('Settings saved.'));
+  backdrop_set_message(t('Settings saved.'));
 }
 
 /**
@@ -221,18 +225,18 @@ function theme_sms_valid_admin_rulesets_form($variables) {
   foreach ($form as $prefix => $element) {
     if (is_array($element) && isset($element['prefix']) && is_array($element['prefix'])) {
       $rows[] = array(
-        drupal_render($element['prefix']),
-        drupal_render($element['name']),
-        drupal_render($element['iso2']),
-        drupal_render($element['qty_rules']),
-        drupal_render($element[$prefix . '_out']),
-        drupal_render($element[$prefix . '_in']),
-        drupal_render($element[$prefix . '_delete']),
+        backdrop_render($element['prefix']),
+        backdrop_render($element['name']),
+        backdrop_render($element['iso2']),
+        backdrop_render($element['qty_rules']),
+        backdrop_render($element[$prefix . '_out']),
+        backdrop_render($element[$prefix . '_in']),
+        backdrop_render($element[$prefix . '_delete']),
       );
       unset($form[$prefix]);
     }
   }
-  $output .= drupal_render_children($form['note']);
+  $output .= backdrop_render_children($form['note']);
   unset($form['note']);
 
   $header = array(
@@ -249,7 +253,7 @@ function theme_sms_valid_admin_rulesets_form($variables) {
     'header' => $header,
     'rows' => $rows,
     ));
-  $output .= drupal_render_children($form);
+  $output .= backdrop_render_children($form);
 
   return $output;
 }
@@ -280,7 +284,7 @@ function sms_valid_admin_rulesets_form_submit($form, &$form_state) {
       }
     }
   }
-  drupal_set_message(t('Rulesets saved.'));
+  backdrop_set_message(t('Rulesets saved.'));
   // $form_state['redirect'] = 'admin/smsframework/validation/countrycodes';
 }
 
@@ -405,14 +409,14 @@ function theme_sms_valid_admin_ruleset_form($variables) {
   $rows   = array();
   $rows[] = array(
     array(
-      'data' => '<strong>' . drupal_render($form['title']) . '</strong>',
+      'data' => '<strong>' . backdrop_render($form['title']) . '</strong>',
       'colspan' => 3,
     ),
   );
 
   $rows[] = array(
-    drupal_render($form['select_prefix']),
-    drupal_render($form['select']),
+    backdrop_render($form['select_prefix']),
+    backdrop_render($form['select']),
     array(
       'data' => '',
       'width' => '80%',
@@ -429,7 +433,7 @@ function theme_sms_valid_admin_ruleset_form($variables) {
     )
   );
 
-  $output .= drupal_render_children($form);
+  $output .= backdrop_render_children($form);
 
   return $output;
 }
@@ -442,7 +446,7 @@ function theme_sms_valid_admin_ruleset_form($variables) {
  */
 function sms_valid_admin_ruleset_form_select(&$form, $form_state) {
   $prefix = $form_state['values']['select_prefix'];
-  drupal_goto("admin/smsframework/validation/ruleset/$prefix");
+  backdrop_goto("admin/smsframework/validation/ruleset/$prefix");
 }
 
 
@@ -465,7 +469,7 @@ function sms_valid_admin_ruleset_form_submit(&$form, $form_state) {
 
   sms_valid_save_ruleset($ruleset);
 
-  drupal_set_message(t('Ruleset saved.'));
+  backdrop_set_message(t('Ruleset saved.'));
 }
 
 
@@ -478,8 +482,9 @@ function sms_valid_admin_ruleset_form_submit(&$form, $form_state) {
  * @ingroup forms
  */
 function sms_valid_admin_test_form($form, &$form_state, $last_test_validation_number = NULL) {
-  $last_number = variable_get('sms_valid_test_last_number', '');
-  $test_mode   = variable_get('sms_valid_test_mode', 0);
+  $config = config('sms.valid.settings');
+  $last_number = $config->get('sms_valid_test_last_number');
+  $test_mode   = $config->get('sms_valid_test_mode');
 
   $form['test_mode'] = array(
     '#type' => 'radios',
@@ -516,15 +521,17 @@ function sms_valid_admin_test_form($form, &$form_state, $last_test_validation_nu
  * @see sms_valid_admin_test_form()
  */
 function sms_valid_admin_test_form_submit(&$form, $form_state) {
+  $config = config('sms.valid.settings');
   $number = $form_state['values']['number'];
-  drupal_set_message(check_plain(t('You entered') . $number));
-  variable_set('sms_valid_test_last_number', $number);
+  backdrop_set_message(check_plain(t('You entered') . $number));
+  $config->set('sms_valid_test_last_number', $number);
 
   $test_mode = $form_state['values']['test_mode'];
-  variable_set('sms_valid_test_mode', $test_mode);
+  $config->set('sms_valid_test_mode', $test_mode);
+  $config->save();
 
-  if (!variable_get('sms_valid_use_rulesets', FALSE)) {
-    drupal_set_message(t('Note: Rulesets are disabled.'));
+  if (!$config->get('sms_valid_use_rulesets', FALSE)) {
+    backdrop_set_message(t('Note: Rulesets are disabled.'));
   }
 
   switch ($test_mode) {
@@ -533,12 +540,12 @@ function sms_valid_admin_test_form_submit(&$form, $form_state) {
       $result  = sms_valid_validate($number, $options);
       $pass    = $result['pass'];
       $log_msg = implode("<br />", $result['log']);
-      drupal_set_message(check_plain($log_msg));
+      backdrop_set_message(check_plain($log_msg));
       break;
     case 1: // Test main validation function
       $error = sms_validate_number($number);
       if ($error) {
-        drupal_set_message(t('Error message from validation function: %error', array('%error' => filter_xss(implode("<br />", $error)))));
+        backdrop_set_message(t('Error message from validation function: %error', array('%error' => filter_xss(implode("<br />", $error)))));
         $pass = FALSE;
       }
       else {
@@ -548,7 +555,7 @@ function sms_valid_admin_test_form_submit(&$form, $form_state) {
   }
 
   if ($pass) {
-    drupal_set_message(t('Validation succeeded and returned number %number.', array('%number' => $number)));
+    backdrop_set_message(t('Validation succeeded and returned number %number.', array('%number' => $number)));
   }
   else {
     form_set_error('number', 'Validation failed.');

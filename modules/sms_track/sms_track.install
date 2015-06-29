@@ -109,7 +109,7 @@ function sms_track_schema() {
 /**
  * Change the 'status' field from tinyint to smallint.
  *
- * See drupal issues #2295013 and #1959802.
+ * See backdrop issues #2295013 and #1959802.
  */
 function sms_track_update_7001(&$sandbox) {
   $schema = sms_track_schema();
@@ -121,7 +121,7 @@ function sms_track_update_7001(&$sandbox) {
 /**
  * Add fields for the message Author's and Recipient's User IDs.
  *
- * See drupal issue #2351575
+ * See backdrop issue #2351575
  */
 function sms_track_update_7002(&$sandbox) {
   // Additional Author and Recipient fields.

@@ -44,6 +44,18 @@ define('SMS_CARRIER_OVERRIDDEN', 1);
 define('SMS_CARRIER_NORMAL', 3);
 
 /**
+ * Implements hook_config_info().
+ */
+function sms_config_info()
+{
+  $prefixes['sms.settings'] = array(
+    'label' => t('SMS settings'),
+    'group' => t('Configuration'),
+  );
+  return $prefixes;
+}
+
+/**
  * Implements hook_menu().
  */
 function sms_menu() {
@@ -56,13 +68,13 @@ function sms_menu() {
     'page callback' => 'system_admin_menu_block_page',
     'access arguments' => array('administer smsframework'),
     'file' => 'system.admin.inc',
-    'file path' => drupal_get_path('module', 'system'),
+    'file path' => backdrop_get_path('module', 'system'),
   );
 
   $items['admin/smsframework/gateways'] = array(
     'title' => 'Gateway configuration',
     'description' => 'Configure gateways and chose the default gateway.',
-    'page callback' => 'drupal_get_form',
+    'page callback' => 'backdrop_get_form',
     'page arguments' => array('sms_admin_default_form', NULL),
     'access arguments' => array('administer smsframework'),
     'file' => 'sms.admin.inc',
@@ -71,7 +83,7 @@ function sms_menu() {
   $items['admin/smsframework/gateways/%'] = array(
     'title callback' => 'sms_admin_gateway_title',
     'title arguments' => array(3),
-    'page callback' => 'drupal_get_form',
+    'page callback' => 'backdrop_get_form',
     'page arguments' => array('sms_admin_gateway_form', 3),
     'access arguments' => array('administer smsframework'),
     'type' => MENU_CALLBACK,
@@ -81,7 +93,7 @@ function sms_menu() {
   $items['admin/smsframework/carriers'] = array(
     'title' => 'Carrier configuration',
     'description' => 'Configure supported carriers.',
-    'page callback' => 'drupal_get_form',
+    'page callback' => 'backdrop_get_form',
     'page arguments' => array('sms_carriers_admin_form'),
     'access arguments' => array('administer smsframework'),
     'file' => 'sms.admin.inc',
@@ -96,7 +108,7 @@ function sms_menu() {
   $items['admin/smsframework/carriers/add'] = array(
     'title' => 'Add',
     'description' => 'Configure supported carriers.',
-    'page callback' => 'drupal_get_form',
+    'page callback' => 'backdrop_get_form',
     'page arguments' => array('sms_carriers_edit_form'),
     'access arguments' => array('administer smsframework'),
     'file' => 'sms.admin.inc',
@@ -106,7 +118,7 @@ function sms_menu() {
   $items['admin/smsframework/carriers/%carrier'] = array(
     'title' => 'Edit carrier',
     'description' => 'Configure supported carriers.',
-    'page callback' => 'drupal_get_form',
+    'page callback' => 'backdrop_get_form',
     'page arguments' => array('sms_carriers_edit_form', 3),
     'access arguments' => array('administer smsframework'),
     'type' => MENU_CALLBACK,
@@ -116,7 +128,7 @@ function sms_menu() {
   $items['admin/smsframework/carriers/delete/%carrier'] = array(
     'title' => 'Edit carrier',
     'description' => 'Configure supported carriers.',
-    'page callback' => 'drupal_get_form',
+    'page callback' => 'backdrop_get_form',
     'page arguments' => array('sms_carriers_delete_form', 4),
     'access arguments' => array('administer smsframework'),
     'type' => MENU_CALLBACK,
@@ -126,7 +138,7 @@ function sms_menu() {
   $items['admin/smsframework/bootstrap'] = array(
     'title' => 'Incoming SMS bootstrap',
     'description' => 'Review settings for incoming SMS bootstrap by-pass',
-    'page callback' => 'drupal_get_form',
+    'page callback' => 'backdrop_get_form',
     'page arguments' => array('sms_bootstrap_admin'),
     'access arguments' => array('administer smsframework'),
     'type' => MENU_LOCAL_TASK,
@@ -329,7 +341,7 @@ function sms_receipt($number, $reference, $message_status = SMS_GW_UNKNOWN_STATU
  * Returns the current default gateway machine name.
  */
 function sms_default_gateway() {
-  return sms_gateways('gateway', variable_get('sms_default_gateway', 'log'));
+  return sms_gateways('gateway', config_get('sms.settings', 'sms_default_gateway'));
 }
 
 /**
@@ -419,7 +431,7 @@ function _gateways_build() {
 
   $gateway_array = module_invoke_all('gateway_info');
   foreach ($gateway_array as $identifier => $info) {
-    $info['configuration'] = variable_get('sms_' . $identifier . '_settings', array());
+    $info['configuration'] = config_get('sms.settings', 'sms_' . $identifier . '_settings');
     $_gateways[$identifier] = $info;
     $_names[$identifier] = $info['name'];
   }
@@ -509,7 +521,7 @@ function sms_send_form_submit($form, &$form_state) {
  */
 function sms_carriers($domain = NULL) {
   $default_carriers = module_invoke_all('sms_carriers');
-  $enabled_carriers = variable_get('sms_enabled_carriers', array());
+  $enabled_carriers = config_get('sms.settings', 'sms_enabled_carriers');
   $carriers = array();
 
   // Load default carriers from code.
@@ -577,17 +589,17 @@ function carrier_save($domain, $edit) {
 
     if ($carrier['type'] == SMS_CARRIER_DEFAULT) {
       $edit['status'] = 1;
-      drupal_write_record('sms_carriers', $edit);
+      backdrop_write_record('sms_carriers', $edit);
     }
     elseif (!empty($edit['domain'])) {
       //Case for when the domain name hasn't changed
       if ($edit['domain'] == $domain) {
-        drupal_write_record('sms_carriers', $edit, 'domain');
+        backdrop_write_record('sms_carriers', $edit, 'domain');
       }
       //Case for when the domain has changed
       else {
         carrier_delete($domain);
-        drupal_write_record('sms_carriers', $edit);
+        backdrop_write_record('sms_carriers', $edit);
       }
 
       // TODO: we need more logic to figure out when someone is changing the
@@ -596,7 +608,7 @@ function carrier_save($domain, $edit) {
   }
   else {
     $edit['status'] = 1;
-    drupal_write_record('sms_carriers', $edit);
+    backdrop_write_record('sms_carriers', $edit);
   }
 }
 
@@ -609,16 +621,17 @@ function carrier_delete($domain) {
   db_delete('sms_carriers')
     ->condition('domain', $domain)
     ->execute();
-
+  $config = config('sms.settings');
   //removes carrier from variable
-  $enabled_carriers = variable_get('sms_enabled_carriers', array());
+  $enabled_carriers = $config->get('sms_enabled_carriers');
   foreach ($enabled_carriers as $i => $carrier) {
     if ($carrier == $domain) {
       unset($enabled_carriers[$i]);
       break;
     }
   }
-  variable_set('sms_enabled_carriers', $enabled_carriers);
+  $config->set('sms_enabled_carriers', $enabled_carriers);
+  $config->save();
 }
 
 /******************************************************************************

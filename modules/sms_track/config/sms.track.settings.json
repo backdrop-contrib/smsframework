@@ -1,0 +1,6 @@
+{
+    "_config_name": "sms.track.settings",
+    "sms_track_archive_dir": 0,
+    "sms_track_archive_max_age_days": 0,
+    "sms_track_archive_cron_last_run": 1435368998
+}

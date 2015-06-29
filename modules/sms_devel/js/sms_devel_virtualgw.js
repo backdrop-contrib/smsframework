@@ -6,7 +6,7 @@
 
 /*
 sms_devel.virtualgw.getactivity = (function() {
-  var url = location.protocol +"//"+ location.host + Drupal.settings.basePath +"admin/smsframework/devel/virtualgw/getactivity";
+  var url = location.protocol +"//"+ location.host + Backdrop.settings.basePath +"admin/smsframework/devel/virtualgw/getactivity";
   $.ajax({
     url: url,
     dataType: 'json',
@@ -14,12 +14,12 @@ sms_devel.virtualgw.getactivity = (function() {
       // Check was successful.
       $("#clean-url input.form-radio").attr("disabled", false);
       $("#clean-url input.form-radio").attr("checked", 1);
-      $("#clean-url .description span").append('<div class="ok">'+ Drupal.settings.cleanURL.success +"</div>");
+      $("#clean-url .description span").append('<div class="ok">'+ Backdrop.settings.cleanURL.success +"</div>");
       $("#testing").hide();
     },
     error: function() {
       // Check failed.
-      $("#clean-url .description span").append('<div class="warning">'+ Drupal.settings.cleanURL.failure +"</div>");
+      $("#clean-url .description span").append('<div class="warning">'+ Backdrop.settings.cleanURL.failure +"</div>");
       $("#testing").hide();
     }
   });

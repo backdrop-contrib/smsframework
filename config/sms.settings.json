@@ -1,0 +1,8 @@
+{
+    "_config_name": "sms.settings",
+    "sms_bootstrap_enabled": false,
+    "sms_bootstrap_routes": [],
+    "sms_bootstrap_queue": [],
+    "sms_default_gateway": "log",
+    "sms_enabled_carriers": []
+}

@@ -9,11 +9,11 @@ bootstrap.
 It provides a very basic routing system, which allows SMS provider modules
 to claim paths and allocate a parser class for the incoming request.
 The parsed SMS is then queued for later processing. By default the core
-database Drupal Queue will be used. To use an alternate queue and avoid 
+database Backdrop Queue will be used. To use an alternate queue and avoid 
 bootstrapping the database see the configuration under.
 
 ------------------
-Using Drupal Queue
+Using Backdrop Queue
 ------------------
 
 At its simplest add to your settings.php file the line:
@@ -44,12 +44,12 @@ To avoid loading the variables you can also set this in the settings.php file. F
 Using an Alternate Queue
 ------------------------
 
-If you are using a queue implementation of DrupalQueue that does not use the 
+If you are using a queue implementation of BackdropQueue that does not use the 
 database, you first must set all the variables above in you settings.php file.
 All variables required need to be in the settings.php to prevent the DB being
 loaded.
 
-Identify your queue with DrupalQueue by setting the appropriate variable. One
+Identify your queue with BackdropQueue by setting the appropriate variable. One
 of:
 
   // If the queue is being used as the default.

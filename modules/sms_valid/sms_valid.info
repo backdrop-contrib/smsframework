@@ -1,12 +1,8 @@
 name = Validation
 description = Provides number validation features to the SMS Framework.
-core = 7.x
 
 package = SMS Framework
 dependencies[] = sms
 
-files[] = sms_valid.admin.inc
-files[] = sms_valid.install
-files[] = sms_valid.module
-files[] = sms_valid.test
-
+backdrop = 1.x
+type = module

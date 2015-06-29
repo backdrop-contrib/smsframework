@@ -19,7 +19,7 @@ function sms_valid_install() {
  * Implements hook_schema().
  *
  * @return array
- *   Drupal schema array.
+ *   Backdrop schema array.
  */
 function sms_valid_schema() {
   $schema = array();

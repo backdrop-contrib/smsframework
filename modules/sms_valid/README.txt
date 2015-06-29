@@ -1,7 +1,7 @@
 
 Description
 ===========
-Provides number validation features for the Drupal SMS Framework. 
+Provides number validation features for the Backdrop SMS Framework. 
 
 Installation
 ============
@@ -12,6 +12,6 @@ http://moo0.net/smsframework/?q=node/19
 
 Credits
 =======
-aspope (http://groups.drupal.org/user/431955)
-andybill (http://groups.drupal.org/user/83300)
-frazras (http://groups.drupal.org/user/13934)
+aspope (http://groups.backdrop.org/user/431955)
+andybill (http://groups.backdrop.org/user/83300)
+frazras (http://groups.backdrop.org/user/13934)

@@ -7,6 +7,18 @@
  */
 
 /**
+ * Implements hook_config_info().
+ */
+function sms_actions_config_info()
+{
+  $prefixes['sms.actions.settings'] = array(
+    'label' => t('SMS Actions settings'),
+    'group' => t('Configuration'),
+  );
+  return $prefixes;
+}
+
+/**
  * Implementation of hook_sms_incoming().
  */
 function sms_actions_sms_incoming($op, $number, $message) {
@@ -24,7 +36,7 @@ function sms_actions_sms_incoming($op, $number, $message) {
     else {
       // Try to figure out what command was actually given
       // preg_match('!^([A-z0-9\-]+).+$!', $message, $matches);
-      // if (variable_get('sms_actions_invalid_cmd_reply', 0)) {
+      // if (config_get('sms.actions.settings', 'sms_actions_invalid_cmd_reply')) {
       //   sms_send($number, t('The command @command was not found.', array('@command' => $matches[1])));
       // }
       // watchdog('sms', t('Command %command not found from @number.', array('%command' => $matches[1], '@number' => $number)), WATCHDOG_WARNING);
@@ -105,14 +117,14 @@ function sms_actions_menu() {
   $items['admin/smsframework/actions/add'] = array(
     'title' => 'Add command',
     'access arguments' => array('administer smsframework'),
-    'page callback' => 'drupal_get_form',
+    'page callback' => 'backdrop_get_form',
     'page arguments' => array('sms_actions_edit_command_form'),
     'type' => MENU_LOCAL_TASK,
   );
   $items['admin/smsframework/actions/edit'] = array(
     'title' => 'Edit command',
     'access arguments' => array('administer smsframework'),
-    'page callback' => 'drupal_get_form',
+    'page callback' => 'backdrop_get_form',
     'page arguments' => array('sms_actions_edit_command_form', 4),
     'type' => MENU_CALLBACK,
   );
@@ -141,7 +153,7 @@ function sms_actions_action_info() {
  *   Array containing contextual information for the action.
  *
  * @return array
- *   Drupal form array.
+ *   Backdrop form array.
  */
 function sms_actions_send_action_form($context) {
   // Set default values for form.
@@ -240,7 +252,7 @@ function sms_actions_send_action($object, $context) {
 
   $number = $context['number'];
 
-  $variables['%site_name'] = variable_get('site_name', 'Drupal');
+  $variables['%site_name'] = config_get('system.core', 'site_name');
 
   if (isset($node)) {
     if (!isset($account)) {
@@ -334,7 +346,7 @@ function sms_actions_trigger_info() {
  *   The list of commands that have been created by the UI.
  */
 function sms_actions_get_commands() {
-  $commands =  variable_get('sms_actions_commands', array());
+  $commands =  config_get('sms.actions.settings', 'sms_actions_commands');
 
   foreach ($commands as $key => $command) {
     $commands[$key]->hook = 'sms_actions_'. $command->discriminator;
@@ -353,7 +365,7 @@ function sms_actions_get_commands() {
  *   The command object with the associated discriminator (machine_name).
  */
 function sms_actions_command_load($discriminator) {
-  $commands = variable_get('sms_actions_commands', array());
+  $commands = config_get('sms.actions.settings', 'sms_actions_commands');
   return $commands[$discriminator];
 }
 
@@ -368,16 +380,16 @@ function sms_actions_command_save($command) {
   }
   unset($commands[$existing_discriminator]);
   $commands[$command->discriminator] = $command;
-  variable_set('sms_actions_commands', $commands);
+  config_set('sms.actions.settings', 'sms_actions_commands', $commands);
 }
 
 /**
  * Deletes a command.
  */
 function sms_actions_command_delete($discriminator) {
-  $commands = variable_get('sms_actions_commands', array());
+  $commands = config_get('sms.actions.settings', 'sms_actions_commands');
   unset($commands[$discriminator]);
-  variable_set('sms_actions_commands', $commands);
+  config_set('sms.actions.settings', 'sms_actions_commands', $commands);
   db_query("DELETE FROM {trigger_assignments} WHERE hook = '%s'", array('sms_actions_' . $discriminator));
 }
 
@@ -409,7 +421,7 @@ function sms_actions_command_list() {
  *   Determines which command is to be edited. Null for an empty form.
  *
  * @return array
- *   Drupal form array.
+ *   Backdrop form array.
  *
  * @see sms_actions_edit_command_form_validate()
  * @see sms_actions_edit_command_form_submit()
@@ -486,7 +498,7 @@ function sms_actions_edit_command_form_submit($form, &$form_state) {
   }
   sms_actions_command_save($command);
   // $commands[$command->discriminator] = $command;
-  // variable_set('sms_actions_commands', $commands);
+  // config_set('sms.actions.settings', 'sms_actions_commands', $commands);
   $form_state['redirect'] = 'admin/smsframework/actions';
 }
 
@@ -497,7 +509,7 @@ function sms_actions_edit_command_form_submit($form, &$form_state) {
  *   Determines which command to confirm deletion.
  *
  * @return array
- *   Drupal form array.
+ *   Backdrop form array.
  *
  * @see sms_actions_command_confirm_delete_submit()
  */
@@ -522,7 +534,7 @@ function sms_actions_command_confirm_delete($form_state, $discriminator) {
  */
 function sms_actions_command_confirm_delete_submit($form, &$form_state) {
   sms_actions_command_delete($form_state['values']['discriminator']);
-  drupal_set_message(t('The command %command has been deleted.', array('%command' => $form_state['values']['discriminator'])));
+  backdrop_set_message(t('The command %command has been deleted.', array('%command' => $form_state['values']['discriminator'])));
 
   $form_state['redirect'] = 'admin/smsframework/actions';
 }

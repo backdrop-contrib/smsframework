@@ -8,7 +8,7 @@
 /**
  * Provides integration tests for the SMS Framework.
  */
-class SmsFrameworkWebTest extends DrupalWebTestCase {
+class SmsFrameworkWebTest extends BackdropWebTestCase {
 
   public static function getInfo() {
     return array(
@@ -20,8 +20,8 @@ class SmsFrameworkWebTest extends DrupalWebTestCase {
 
   public function setUp() {
     parent::setUp('sms', 'sms_test_gateway');
-    $user = $this->drupalCreateUser(array('administer smsframework'));
-    $this->drupalLogin($user);
+    $user = $this->backdropCreateUser(array('administer smsframework'));
+    $this->backdropLogin($user);
   }
 
   /**
@@ -36,13 +36,13 @@ class SmsFrameworkWebTest extends DrupalWebTestCase {
    */
   public function testDefaultGateway() {
     // Set up default log gateway.
-    $this->drupalPost('admin/smsframework/gateways', array('default' => 'log'), t('Set default gateway'));
+    $this->backdropPost('admin/smsframework/gateways', array('default' => 'log'), t('Set default gateway'));
     $this->assertResponse(200);
     $gw = sms_default_gateway();
     $this->assertEqual($gw['identifier'], 'log', 'Default gateway set to log.');
 
     // Set up default test gateway.
-    $this->drupalPost('admin/smsframework/gateways', array('default' => 'test'), t('Set default gateway'));
+    $this->backdropPost('admin/smsframework/gateways', array('default' => 'test'), t('Set default gateway'));
     $this->assertResponse(200);
     $gw = sms_default_gateway();
     $this->assertEqual($gw['identifier'], 'test', 'Default gateway set to test.');
@@ -59,7 +59,7 @@ class SmsFrameworkWebTest extends DrupalWebTestCase {
       'method' => 0,
       'ssl' => false,
     );
-    $this->drupalPost('admin/smsframework/gateways/test', $edit, t('Save'));
+    $this->backdropPost('admin/smsframework/gateways/test', $edit, t('Save'));
     $this->assertResponse(200);
     $gateway = sms_gateways('gateway', 'test');
     $this->assertEqual($edit, $gateway['configuration'], 'SMS Test gateway successfully configured.');

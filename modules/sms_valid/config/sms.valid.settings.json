@@ -1,0 +1,12 @@
+{
+    "_config_name": "sms.valid.settings",
+    "sms_valid_use_rulesets": false,
+    "sms_valid_use_global_ruleset": false,
+    "sms_valid_local_number_prefix": false,
+    "sms_valid_local_number_ruleset": 64,
+    "sms_valid_last_resort_enabled": false,
+    "sms_valid_last_resort_ruleset": 0,
+    "sms_valid_global_ruleset": 64,
+    "sms_valid_test_last_number": "",
+    "sms_valid_test_mode": ""
+}

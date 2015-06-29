@@ -2,11 +2,23 @@
 
 /**
  * @file
- * Message tracking feature module for Drupal SMS Framework.
+ * Message tracking feature module for Backdrop SMS Framework.
  *
  * @package sms
  * @subpackage sms_track
  */
+
+/**
+ * Implements hook_config_info().
+ */
+function sms_track_config_info()
+{
+  $prefixes['sms.track.settings'] = array(
+    'label' => t('SMS Track settings'),
+    'group' => t('Configuration'),
+  );
+  return $prefixes;
+}
 
 /**
  * Implements hook_help().
@@ -26,7 +38,7 @@ function sms_track_help($path, $arg) {
  * Implements hook_enable().
  */
 function sms_track_enable() {
-  if (variable_get('sms_track_archive_dir', SMS_DIR_NONE)) {
+  if (config_get('sms.track.settings', 'sms_track_archive_dir')) {
     watchdog('sms_track', 'SMS Tracking archive collector enabled');
   }
 }
@@ -36,7 +48,7 @@ function sms_track_enable() {
  * Implements hook_disable().
  */
 function sms_track_disable() {
-  if (variable_get('sms_track_archive_dir', SMS_DIR_NONE)) {
+  if (config_get('sms.track.settings', 'sms_track_archive_dir')) {
     watchdog('sms_track', 'SMS Tracking archive collector DISABLED');
   }
 }
@@ -46,13 +58,15 @@ function sms_track_disable() {
  * Implements hook_cron().
  */
 function sms_track_cron() {
+  $config = config('sms.track.settings');
+
   // Ensure that we only run at most once per hour
-  $last_run = variable_get('sms_track_archive_cron_last_run', 0);
+  $last_run = $config->get('sms_track_archive_cron_last_run');
   $time_an_hour_ago = REQUEST_TIME - 3600;
   if ($last_run <= $time_an_hour_ago) {
     // Purge the archive
     sms_track_archive_purge();
-    variable_set('sms_track_archive_cron_last_run', REQUEST_TIME);
+    $config->set('sms.track.settings', 'sms_track_archive_cron_last_run', REQUEST_TIME);
   }
 }
 
@@ -81,7 +95,7 @@ function sms_track_menu() {
   $items['admin/smsframework/sms_track'] = array(
     'title' => 'Message tracking',
     'description' => 'Options and view for the message archive.',
-    'page callback' => 'drupal_get_form',
+    'page callback' => 'backdrop_get_form',
     'page arguments' => array('sms_track_settings_form'),
     'access arguments' => array('administer smsframework'),
     'file' => 'sms_track.admin.inc',
@@ -200,7 +214,7 @@ function sms_track_sms_receipt($op, $number, $reference, $status, $options) {
  */
 function sms_track_archive_write($dir, $number, $message, $options = array()) {
   global $user;
-  $archive_dir = variable_get('sms_track_archive_dir', SMS_DIR_NONE);
+  $archive_dir = config_get('sms.track.settings', 'sms_track_archive_dir');
   // Query the database for the uid of the user that owns the number.
   if (module_exists("sms_user")) {
     $remote_user = sms_user_get_uid($number);
@@ -310,7 +324,7 @@ function sms_track_update_message($reference, $status) {
 function sms_track_views_api() {
   return array(
     'api' => 3,
-    'path' => drupal_get_path('module', 'sms_track') . '/views',
+    'path' => backdrop_get_path('module', 'sms_track') . '/views',
   );
 }
 
@@ -325,7 +339,7 @@ function sms_track_views_api() {
 function sms_track_archive_purge($max_age_days = NULL) {
   // Get the configured max_age from the variable table if not given.
   if (is_null($max_age_days)) {
-    $max_age_days = variable_get('sms_track_archive_max_age_days', 0);
+    $max_age_days = config_get('sms.track.settings', 'sms_track_archive_max_age_days');
   }
   // Purge with no survivors.
   if ($max_age_days > 0) {

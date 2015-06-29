@@ -10,18 +10,20 @@
  * SMS admin settings form.
  */
 function sms_user_admin_settings($form, &$form_state) {
+  $config = config('sms.user.settings');
+  
   $form['sms_user_registration_form'] = array(
     '#type' => 'radios',
     '#title' => t('Show mobile fields during user registration'),
     '#description' => t('Specify if the site should collect mobile information during registration.'),
     '#options' => array(t('Disabled'), t('Optional'), t('Required')),
-    '#default_value' => variable_get('sms_user_registration_form', 0),
+    '#default_value' => $config->get('sms_user_registration_form'),
   );
 
   $form['sms_user_confirmation_message'] = array(
     '#type' => 'textfield',
     '#title' => t('Confirmation message format'),
-    '#default_value' => variable_get('sms_user_confirmation_message', '[site:name] confirmation code: '),
+    '#default_value' => $config->get('sms_user_confirmation_message'),
     '#description' => t('Specify the format for confirmation messages. Keep this as short as possible.'),
     '#size' => 140,
     '#maxlength' => 255,
@@ -62,11 +64,12 @@ function sms_user_admin_settings($form, &$form_state) {
     '#type' => 'checkbox',
     '#title' => t('Enable sleep hours'),
     '#description' => t('If checked, users will be able to specifiy hours during which they will not receive messages from the site.'),
-    '#default_value' => variable_get('sms_user_sleep', 1),
+    '#default_value' => $config->get('sms_user_sleep'),
   );
 
   // Determine whether to use the 24-hour or 12-hour clock based on site settings.
-  if (strpos(variable_get('date_format_short', 'm/d/Y - H:i'), 'g')) {
+  $format_load = system_date_format_load('short');
+  if (strpos($format_load['pattern'], 'g')) {
     $format = 'g A';
   }
   else {
@@ -84,7 +87,7 @@ function sms_user_admin_settings($form, &$form_state) {
       '#type' => 'select',
       '#multiple' => FALSE,
       '#options' => $options,
-      '#default_value' => variable_get('sms_user_sleep_start_time', 0),
+      '#default_value' => $config->get('sms_user_sleep_start_time'),
   );
 
   $form['sleep']['sms_user_sleep_end_time'] = array(
@@ -92,7 +95,7 @@ function sms_user_admin_settings($form, &$form_state) {
       '#type' => 'select',
       '#multiple' => FALSE,
       '#options' => $options,
-      '#default_value' => variable_get('sms_user_sleep_end_time', 0),
+      '#default_value' => $config->get('sms_user_sleep_end_time'),
   );
 
   // SMS User opt-out settings.
@@ -107,7 +110,7 @@ function sms_user_admin_settings($form, &$form_state) {
     '#type' => 'checkbox',
     '#title' => t('Allow users to opt-out of receiving messages from this site'),
     '#description' => t('If checked, users will be able to opt out of receiving messages from the site.'),
-    '#default_value' => variable_get('sms_user_allow_opt_out', 1),
+    '#default_value' => $config->get('sms_user_allow_opt_out'),
   );
 
   // Registration settings.
@@ -120,19 +123,19 @@ function sms_user_admin_settings($form, &$form_state) {
   $form['registration']['sms_user_registration_enabled'] = array(
     '#type' => 'checkbox',
     '#title' => t('Enable registration'),
-    '#default_value' => variable_get('sms_user_registration_enabled', 0),
+    '#default_value' => $config->get('sms_user_registration_enabled'),
     '#description' => t('If selected, users can create user accounts via SMS.'),
   );
   $form['registration']['sms_user_allow_password'] = array(
     '#type' => 'checkbox',
     '#title' => t('Allow password creation'),
-    '#default_value' => variable_get('sms_user_allow_password', 0),
+    '#default_value' => $config->get('sms_user_allow_password'),
     '#description' => t('If selected, the user will be allowed to include a password in their registration request -- the password will be the first word in the first line of the request.'),
   );
   $form['registration']['sms_user_new_account_message'] = array(
     '#type' => 'textarea',
     '#title' => t('New user message'),
-    '#default_value' => variable_get('sms_user_new_account_message', ''),
+    '#default_value' => $config->get('sms_user_new_account_message'),
     '#description' => t('The message that will be sent to newly registered users.  Leave empty for no message.'),
   );
 
@@ -159,9 +162,33 @@ function sms_user_admin_settings($form, &$form_state) {
   */
   $form['sms_user_max_chars'] = array(
     '#type' => 'textfield',
-    '#default_value' => variable_get('sms_user_max_chars', SMS_USER_MAX_CHARS),
+    '#default_value' => $config->get('sms_user_max_chars'),
     '#size' => 3,
     '#title' => t('Maximum number of chars for SMS sending using actions'),
   );
-  return system_settings_form($form);
+  $form['actions']['#type'] = 'actions';
+  $form['actions']['submit'] = array(
+    '#type' => 'submit',
+    '#value' => t('Save configuration'),
+  );
+  return $form;
+}
+
+/**
+ * Submit handler for sms_user_admin_settings().
+ */
+function sms_user_admin_settings_submit($form, &$form_state) {
+  $config = config('sms.user.settings');
+  $config->set('sms_user_registration_form', $form_state['values']['sms_user_registration_form']);
+  $config->set('sms_user_confirmation_message', $form_state['values']['sms_user_confirmation_message']);
+  $config->set('sms_user_sleep', $form_state['values']['sms_user_sleep']);
+  $config->set('sms_user_sleep_start_time', $form_state['values']['sms_user_sleep_start_time']);
+  $config->set('sms_user_sleep_end_time', $form_state['values']['sms_user_sleep_end_time']);
+  $config->set('sms_user_allow_opt_out', $form_state['values']['sms_user_allow_opt_out']);
+  $config->set('sms_user_registration_enabled', $form_state['values']['sms_user_registration_enabled']);
+  $config->set('sms_user_allow_password', $form_state['values']['sms_user_allow_password']);
+  $config->set('sms_user_new_account_message', $form_state['values']['sms_user_new_account_message']);
+  $config->set('sms_user_max_chars', $form_state['values']['sms_user_max_chars']);
+  $config->save();
+  backdrop_set_message(t('The configuration options have been saved.'));
 }

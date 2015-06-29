@@ -40,8 +40,8 @@ function sms_user_send_sms_action(&$user, $context) {
  *   The form array.
  */
 function sms_user_send_sms_action_form($context) {
-  $limit = variable_get('sms_user_max_chars', SMS_USER_MAX_CHARS);
-  drupal_add_js(drupal_get_path('module', 'sms_user') . '/sms_user.js');
+  $limit = config_get('sms.user.settings', 'sms_user_max_chars');
+  backdrop_add_js(backdrop_get_path('module', 'sms_user') . '/sms_user.js');
 
   $form['sms_text'] = array(
     '#type' => 'textarea',
@@ -66,8 +66,8 @@ function sms_user_send_sms_action_validate($form, $form_state) {
   if (empty($sms_text)) {
     form_set_error('sms_text', t('This field is required'));
   }
-  $length = drupal_strlen($sms_text);
-  if ($length > variable_get('sms_user_max_chars', SMS_USER_MAX_CHARS)) {
+  $length = backdrop_strlen($sms_text);
+  if ($length > config_get('sms.user.settings', 'sms_user_max_chars')) {
     $error = t('SMS too long: (@text) [length=@len]',
         array('@text' => $sms_text, '@len' => $length));
     form_set_error('sms_text', $error);

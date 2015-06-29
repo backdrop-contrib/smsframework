@@ -10,9 +10,10 @@
  */
 function sms_admin_default_form($form, &$form_state) {
   $gateways = sms_gateways();
+  $config = config('sms.settings');
 
   foreach ($gateways as $identifier => $gateway) {
-    $active = ($identifier == variable_get('sms_default_gateway', 'log'));
+    $active = ($identifier == $config->get('sms_default_gateway'));
     $options[$identifier] = '';
     $form[$gateway['name']]['id'] = array('#markup' => $identifier);
     if ( isset($gateway['configure form'] ) and ( function_exists($gateway['configure form'] ))) {
@@ -26,7 +27,7 @@ function sms_admin_default_form($form, &$form_state) {
   $form['default'] = array(
     '#type' => 'radios',
     '#options' => $options,
-    '#default_value' => variable_get('sms_default_gateway', 'log'),
+    '#default_value' => $config->get('sms_default_gateway'),
   );
 
   $form['submit'] = array(
@@ -45,8 +46,8 @@ function sms_admin_default_form($form, &$form_state) {
 function sms_admin_default_form_submit($form, &$form_state) {
   // Process form submission to set the default gateway
   if ($form_state['values']['default']) {
-    drupal_set_message(t('Default gateway updated.'));
-    variable_set('sms_default_gateway', $form_state['values']['default']);
+    backdrop_set_message(t('Default gateway updated.'));
+    config_set('sms.settings', 'sms_default_gateway', $form_state['values']['default']);
   }
 }
 
@@ -64,7 +65,7 @@ function theme_sms_admin_default_form($variables) {
   foreach ($form as $name => $element) {
     if (is_array($element) and isset($element['id']) and is_array($element['id'])) {
       $rows[] = array(
-        drupal_render($form['default'][$element['id']['#markup']]),
+        backdrop_render($form['default'][$element['id']['#markup']]),
         check_plain($name),
         $element['configure']['#markup'],
       );
@@ -77,7 +78,7 @@ function theme_sms_admin_default_form($variables) {
     ));
   $output = '';
   $output .= theme('table', array('header' => $header, 'rows' => $rows));
-  $output .= drupal_render_children($form);
+  $output .= backdrop_render_children($form);
 
   return $output;
 }
@@ -94,7 +95,7 @@ function theme_sms_admin_default_form($variables) {
 function sms_admin_gateway_form($form, &$form_state, $gateway_id) {
   $gateway = sms_gateways('gateway', $gateway_id);
   if ($gateway && function_exists($gateway['configure form'])) {
-    drupal_set_title(t('@gateway configuration', array('@gateway' => $gateway['name'])), PASS_THROUGH);
+    backdrop_set_title(t('@gateway configuration', array('@gateway' => $gateway['name'])), PASS_THROUGH);
     $form = $gateway['configure form']($gateway['configuration']);
 
     $form['submit'] = array(
@@ -108,7 +109,7 @@ function sms_admin_gateway_form($form, &$form_state, $gateway_id) {
 
     return $form;
   }
-  drupal_not_found();
+  backdrop_not_found();
   exit();
 }
 
@@ -138,8 +139,8 @@ function sms_admin_gateway_form_submit($form, &$form_state) {
 
   // Remove unnecessary values
   unset($values['op'], $values['submit'], $values['gateway'], $values['form_token'], $values['form_id'], $values['form_build_id']);
-  variable_set('sms_' . $gateway['identifier'] . '_settings', $values);
-  drupal_set_message(t('The gateway settings have been saved.'));
+  config_set('sms.settings', 'sms_' . $gateway['identifier'] . '_settings', $values);
+  backdrop_set_message(t('The gateway settings have been saved.'));
   $form_state['redirect'] = 'admin/smsframework/gateways';
 }
 
@@ -151,6 +152,7 @@ function sms_admin_gateway_form_submit($form, &$form_state) {
 function sms_carriers_admin_form($form, &$form_state) {
   $carriers = sms_carriers();
   $form = array();
+  $form['status'] = array();
   foreach ($carriers as $id => $carrier) {
     $actions = array();
     $css_safe_id = str_replace('.', '-', $id);
@@ -217,8 +219,8 @@ function sms_carriers_admin_form_submit(&$form, &$form_state) {
       $enabled_carriers[] = str_replace('-', '.', $carrier);
     }
   }
-  variable_set('sms_enabled_carriers', $enabled_carriers);
-  drupal_set_message(t('The configuration options have been saved.'));
+  config_set('sms.settings', 'sms_enabled_carriers', $enabled_carriers);
+  backdrop_set_message(t('The configuration options have been saved.'));
 }
 
 /**
@@ -292,8 +294,8 @@ function sms_carriers_edit_form_submit(&$form, &$form_state) {
     'domain' => $form_state['values']['domain'],
   );
   carrier_save($form_state['values']['carrier'], $carrier);
-  drupal_set_message(t('The carrier has been saved.'));
-  drupal_goto('admin/smsframework/carriers');
+  backdrop_set_message(t('The carrier has been saved.'));
+  backdrop_goto('admin/smsframework/carriers');
 }
 
 /**
@@ -331,10 +333,10 @@ function sms_carriers_delete_form_submit($form, &$form_state) {
   # XXX D7 porting issue: $carrier below never gets set ??
   # --- this is ALSO a bug in the D6 verion!
   #if ($carrier['type'] == SMS_CARRIER_OVERRIDDEN) {
-  #  drupal_set_message(t('The carrier has been reverted.'));
+  #  backdrop_set_message(t('The carrier has been reverted.'));
   #}
   #if ($carrier['type'] == SMS_CARRIER_NORMAL) {
-  #  drupal_set_message(t('The carrier has been deleted.'));
+  #  backdrop_set_message(t('The carrier has been deleted.'));
   #}
 
   $form_state['redirect'] = 'admin/smsframework/carriers';
@@ -350,7 +352,7 @@ function sms_carriers_delete_form_submit($form, &$form_state) {
  */
 function theme_sms_carriers_admin_form($variables) {
   $form = $variables['form'];
-
+dpm($form);
   $header = array(t('Enabled'), t('Carrier'), t('Domain'), t('Actions'));
 
   $rows = array();
@@ -362,17 +364,17 @@ function theme_sms_carriers_admin_form($variables) {
     unset($form['status'][$element]['#title']);
     unset($form['status'][$element]['#description']);
     $row = array(
-      'status' => drupal_render($form['status'][$element]),
+      'status' => backdrop_render($form['status'][$element]),
       'name' => $name,
-      'domain' => drupal_render($form['domain'][$element]), 
-      'actions' => drupal_render($form['actions'][$element]),
+      'domain' => backdrop_render($form['domain'][$element]), 
+      'actions' => backdrop_render($form['actions'][$element]),
     );
     $rows[] = $row;
   }
   $output = '';
   $output .= theme('table', array('header' => $header, 'rows' => $rows, 'attributes' => array( 'class' => array('sms'), 'id' => 'sms-form-table' )));
-  $output .= drupal_render($form['submit']);
-  $output .= drupal_render_children($form);
+  $output .= backdrop_render($form['submit']);
+  $output .= backdrop_render_children($form);
 
   return $output;
 }
@@ -381,7 +383,8 @@ function theme_sms_carriers_admin_form($variables) {
  * Form callback. Overview of any bootstrap options.
  */
 function sms_bootstrap_admin($form, $form_state) {
-  $cache_backends = variable_get('cache_backends', array());
+  $config = config('sms.settings');
+  $cache_backends = settings_get('cache_backends', array());
 
   $configured = FALSE;
   foreach ($cache_backends as $inc) {
@@ -410,7 +413,7 @@ function sms_bootstrap_admin($form, $form_state) {
 
   $form['sms_bootstrap_enabled'] = array(
     '#type' => 'checkbox',
-    '#default_value' => variable_get('sms_bootstrap_enabled', FALSE),
+    '#default_value' => $config->get('sms_bootstrap_enabled'),
     '#title' => t('Bootstrap by-pass enabled'),
     '#description' => t('If the variable sms_bootstrap_enabled is configured in your settings.php (advised) you will not be able to change it here.'),
   );
@@ -422,7 +425,7 @@ function sms_bootstrap_admin($form, $form_state) {
   );
   $form['sms_bootstrap_routes']['vardump'] = array(
     '#type' => 'markup',
-    '#markup' => '<pre>' . filter_xss_admin(print_r(variable_get('sms_bootstrap_routes', array()), TRUE)) . '</pre>',
+    '#markup' => '<pre>' . filter_xss_admin(print_r($config->get('sms_bootstrap_routes'), TRUE)) . '</pre>',
   );
 
   $form['sms_bootstrap_queue'] = array(
@@ -436,22 +439,36 @@ function sms_bootstrap_admin($form, $form_state) {
     'require db' => TRUE,
     'reliable' => TRUE,
   );
-  $queue_config = variable_get('sms_bootstrap_queue', array());
+  $queue_config = $config->get('sms_bootstrap_queue');
   $queue_config += $queue_default;
   if (!empty ($queue_config['inc'])) {
     // Maybe the include file isn't included. Plus if the path is wrong it will
     // give a warning here.
     include_once($queue_config['inc']);
   }
-  // Now use DrupalQueue to retrieve whichever queue it would return.
-  $queue = DrupalQueue::get($queue_config['name']);
+  // Now use BackdropQueue to retrieve whichever queue it would return.
+  $queue = BackdropQueue::get($queue_config['name']);
   $queue_class = get_class($queue);
 
   $form['sms_bootstrap_queue']['vardump'] = array(
     '#type' => 'markup',
-    '#markup' => '<pre>' . filter_xss_admin(print_r($queue_config, TRUE) . "\nDrupal is using the $queue_class") . '</pre>',
+    '#markup' => '<pre>' . filter_xss_admin(print_r($queue_config, TRUE) . "\nBackdrop is using the $queue_class") . '</pre>',
   );
 
-  return system_settings_form($form);
+  $form['actions']['#type'] = 'actions';
+  $form['actions']['submit'] = array(
+    '#type' => 'submit',
+    '#value' => t('Save configuration'),
+  );
+  return $form;
 }
 
+/**
+ * Submit handler for sms_bootstrap_admin().
+ */
+function sms_bootstrap_admin_submit($form, &$form_state) {
+  $config = config('sms.settings');
+  $config->set('sms_bootstrap_enabled', $form_state['values']['sms_bootstrap_enabled']);
+  $config->save();
+  backdrop_set_message(t('The configuration options have been saved.'));
+}

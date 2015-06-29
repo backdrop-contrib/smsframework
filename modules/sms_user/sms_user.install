@@ -11,11 +11,13 @@
  * Implemenents hook_requirements()
  */
 function sms_user_requirements($phase) {
+  $config = config('sms.user.settings');
+  
   $requirements = array();
   if ($phase == 'runtime') {
-    $sms_user_registration_enabled = variable_get('sms_user_registration_enabled');
-    $user_email_verification = variable_get('user_email_verification');
-    $user_register = variable_get('user_register');
+    $sms_user_registration_enabled = $config->get('sms_user_registration_enabled');
+    $user_email_verification = $config->get('user_email_verification');
+    $user_register = $config->get('user_register');
     if ($sms_user_registration_enabled) {
       $requirements['sms_user'] = array(
         'title' => t('SMS User'),
@@ -113,89 +115,8 @@ function sms_user_schema() {
 }
 
 /**
- * Drop the now dead delta field, and change primary key to number.
- */
-function sms_user_update_1() {
-  $ret = array();
-  db_drop_primary_key('sms_user');
-  db_add_primary_key('sms_user', array('number'));
-  db_add_index('sms_user', 'uid', array('uid'));
-  db_drop_field('sms_user', 'delta');
-  // hook_update_N() no longer returns a $ret array. Instead, return
-  // nothing or a translated string indicating the update ran successfully.
-  // See http://drupal.org/node/224333#update_sql.
-  return t('TODO Add a descriptive string here to show in the UI.') /* $ret */;
-}
-
-/**
- * Implements hook_uninstall().
- */
-function sms_user_uninstall() {
-  $variables = array(
-    'sms_user_registration_enabled',
-    'sms_user_allow_password',
-    'sms_user_new_account_message',
-  );
-
-  foreach ($variables as $variable) {
-    variable_del($variable);
-  }
-
-}
-
-/**
  * Update code field to NOT NULL.
  */
-function sms_user_update_7000() {
+function sms_user_update_1000() {
   // update code field to NOT NULL
-}
-
-/**
- * Add sleep_enabled, sleep_start_time, sleep_end_time fields to {sms_user} table.
- */
-function sms_user_update_7003() {
-  $spec = array(
-      'sleep_enabled' => array(
-        'type' => 'int',
-        'size' => 'tiny',
-        'unsigned' => TRUE,
-        'default' => 0,
-        'not null' => TRUE,
-      ),
-      'sleep_start_time' => array(
-        'type' => 'int',
-        'size' => 'tiny',
-        'unsigned' => TRUE,
-        'default' => 0,
-        'not null' => FALSE,
-      ),
-      'sleep_end_time' => array(
-        'type' => 'int',
-        'size' => 'tiny',
-        'unsigned' => TRUE,
-        'default' => 0,
-        'not null' => FALSE,
-      ),
-    );
-  foreach ($spec as $key => $value) {
-    db_add_field('sms_user', $key, $value);
-  }
-}
-
-/**
- * Add sms_user_opt_out field to {sms_user} table.
- */
-function sms_user_update_7004() {
-  $spec = array(
-      'sms_user_opt_out' => array(
-        'type' => 'int',
-        'size' => 'tiny',
-        'unsigned' => TRUE,
-        'default' => 0,
-        'not null' => TRUE,
-      ),
-    );
-  foreach ($spec as $key=>$value) {
-    db_add_field('sms_user', $key, $value);
-  }
 }

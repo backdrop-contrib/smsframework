@@ -2,7 +2,6 @@ name = Send to phone
 description = Provides various tools for sending bits of information via SMS.
 dependencies[] = sms
 package = SMS Framework
-core = 7.x
-files[] = sms_sendtophone.css
-files[] = sms_sendtophone.module
-files[] = sms_sendtophone.test
+
+backdrop = 1.x
+type = module
