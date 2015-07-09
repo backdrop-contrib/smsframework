@@ -64,14 +64,14 @@ function sms_user_menu() {
  * Implements hook_menu_alter().
  */
 function sms_user_menu_alter(&$callbacks) {
+  $callbacks['user/%user/edit/default']['title'] = 'Edit account';
+  $callbacks['user/%user/edit/default']['type'] = MENU_DEFAULT_LOCAL_TASK;
+  $callbacks['user/%user/edit/mobile']['title'] = 'Mobile settings';
   $callbacks['user/%user/edit/mobile']['page callback'] = 'sms_user_settings';
   $callbacks['user/%user/edit/mobile']['page arguments'] = array(1);
   $callbacks['user/%user/edit/mobile']['type'] = MENU_LOCAL_TASK;
-  $callbacks['user/%user/edit/mobile/default']['type'] = MENU_DEFAULT_LOCAL_TASK;
-  $callbacks['user/%user/edit/mobile']['tab_parent'] = 'user/%user/edit';
   $callbacks['user/%user/edit/mobile']['access arguments'] = array('administer users');
-  // $callbacks['user/%user/edit/mobile']['module'] = 'sms_user';
-  // $callbacks['user/%user/edit/mobile']['file'] = 'sms_user.module';
+  $callbacks['user/%user/edit/mobile']['module'] = 'sms_user';
 }
 
 /**
