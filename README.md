@@ -7,11 +7,10 @@ Provides a pluggable API for Backdrop to interact with SMS messages.
 
 - sms.module - the core API module
 - sms_user.module - provides integration with Backdrop users
-- sms_blast.module - for sending a batch of messages (PORT IN PROGRESS)
+- sms_blast.module - for sending a batch of messages
 - sms_valid.module - provides extensible validation functionality (PORT IN PROGRESS)
 - sms_track.module - records sms inbound and outbound traffic for tracking purposes (PORT IN PROGRESS)
 - sms_sendtophone.module - input filter and node links for sending snippets of text via sms (PORT IN PROGRESS)
-- sms_actions.module - integrates sms with the actions module (PORT IN PROGRESS)
 - sms_devel.module - integrates sms with devel module (PORT IN PROGRESS)
 
 

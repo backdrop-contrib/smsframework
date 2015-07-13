@@ -160,12 +160,6 @@ function sms_user_admin_settings($form, &$form_state) {
 
   $form['registration']['tokens']['content']['#value'] = theme('token_tree', array('token_types' => array('sms_user')));
   */
-  $form['sms_user_max_chars'] = array(
-    '#type' => 'textfield',
-    '#default_value' => $config->get('sms_user_max_chars'),
-    '#size' => 3,
-    '#title' => t('Maximum number of chars for SMS sending using actions'),
-  );
   $form['actions']['#type'] = 'actions';
   $form['actions']['submit'] = array(
     '#type' => 'submit',
@@ -188,7 +182,6 @@ function sms_user_admin_settings_submit($form, &$form_state) {
   $config->set('sms_user_registration_enabled', $form_state['values']['sms_user_registration_enabled']);
   $config->set('sms_user_allow_password', $form_state['values']['sms_user_allow_password']);
   $config->set('sms_user_new_account_message', $form_state['values']['sms_user_new_account_message']);
-  $config->set('sms_user_max_chars', $form_state['values']['sms_user_max_chars']);
   $config->save();
   backdrop_set_message(t('The configuration options have been saved.'));
 }

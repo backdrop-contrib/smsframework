@@ -11,7 +11,6 @@ define('SMS_USER_CONFIRMED', 2);
 define('SMS_USER_SMS_REGISTERED', 3);
 define('SMS_USER_MAX_CHARS', 140);
 
-require_once 'sms_user.actions.inc';
 require_once 'sms_user.rules.inc';
 
 /**

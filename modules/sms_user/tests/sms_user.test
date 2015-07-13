@@ -9,7 +9,7 @@
  * Provides integration tests for the sms_user module.
  *
  * @todo Add tests for creation of users via sms.
- * @todo Add tests for integration with rules and actions modules.
+ * @todo Add tests for integration with rules module.
  */
 class SmsUserWebTest extends DrupalWebTestCase {
 
@@ -106,7 +106,6 @@ class SmsUserWebTest extends DrupalWebTestCase {
       'sms_user_registration_enabled' => 1,
       'sms_user_allow_password' => 1,
       'sms_user_new_account_message' => $this->randomString(30),
-      'sms_user_max_chars' => 160,
     );
     $this->drupalPost('admin/smsframework/sms_user_options', $edit, t('Save configuration'));
     $this->assertResponse(200);

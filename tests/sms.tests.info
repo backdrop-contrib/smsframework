@@ -10,12 +10,6 @@ description = Provides tests for the SMS contains keyword condition.
 group = SMS Framework
 file = sms.rules.test
 
-[SmsActionWebTest]
-name = SMS Action Web test
-description = Provides integration tests for the sms_action module.
-group = SMS Framework
-file = sms_actions.test
-
 [SmsBlastWebTest]
 name = SMS Blast Web test
 description = Provides integration tests for the sms_blast module.
