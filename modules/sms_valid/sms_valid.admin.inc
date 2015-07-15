@@ -523,7 +523,7 @@ function sms_valid_admin_test_form($form, &$form_state, $last_test_validation_nu
 function sms_valid_admin_test_form_submit(&$form, $form_state) {
   $config = config('sms.valid.settings');
   $number = $form_state['values']['number'];
-  backdrop_set_message(check_plain(t('You entered') . $number));
+  backdrop_set_message(check_plain(t('You entered: ') . $number));
   $config->set('sms_valid_test_last_number', $number);
 
   $test_mode = $form_state['values']['test_mode'];
@@ -540,7 +540,7 @@ function sms_valid_admin_test_form_submit(&$form, $form_state) {
       $result  = sms_valid_validate($number, $options);
       $pass    = $result['pass'];
       $log_msg = implode("<br />", $result['log']);
-      backdrop_set_message(check_plain($log_msg));
+      backdrop_set_message($log_msg);
       break;
     case 1: // Test main validation function
       $error = sms_validate_number($number);
