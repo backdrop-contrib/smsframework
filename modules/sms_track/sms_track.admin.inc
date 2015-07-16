@@ -72,6 +72,7 @@ function sms_track_settings_form_submit($form, &$form_state) {
 
   $archive_max_age_days = $form_state['values']['archive_max_age_days'];
   $config->set('sms_track_archive_max_age_days', $archive_max_age_days);
+  $config->save();
 
   // Trigger watchdog messages.
   if ($archive_dir_old && ! $archive_dir) {
@@ -92,6 +93,6 @@ function sms_track_settings_form_submit($form, &$form_state) {
  *   HTML content string.
  */
 function sms_track_admin_view() {
-  $content = views_embed_view('sms_track', $display_id = 'default');
+  $content = views_embed_view('sms_track');
   return $content;
 }

@@ -11,28 +11,17 @@
 /**
  * Implements hook_config_info().
  */
-function sms_track_config_info()
-{
+function sms_track_config_info() {
   $prefixes['sms.track.settings'] = array(
     'label' => t('SMS Track settings'),
     'group' => t('Configuration'),
   );
+  $prefixes['views.view.sms_track'] = array(
+    'label' => t('SMS Track views'),
+    'group' => t('Configuration'),
+  );
   return $prefixes;
 }
-
-/**
- * Implements hook_help().
- */
-function sms_track_help($path, $arg) {
-  $output = '';
-  switch ($path) {
-    case "admin/help#sms_track":
-      $output = '<p>' . t("<i>TO BE RE-WRITTEN</i> This module simply records all incoming and outgoing SMS messages from the SMS Framework. This can be used to enable an audit trail for your system, so that you can investigate any issues and keen an eye on what is flowing in and out.<br /><br /><strong>Outgoing: </strong>It is important to be aware of your outgoing SMS traffic because user spamming can be expensive for you, and may also expose you to legal issues. A small code error can cause this kind of problem.<br /><br /><strong>Incoming: </strong>The proper handling of inbound messages depends heavily on the quality of your software code. You may find that someone is sending malformed messages to your gateway receiver, which could expose a vulnerability and potentially release sensitive data.<br /><br />This module uses a database table to store messages, and implements Views for reporting.") . '</p>';
-      break;
-  }
-  return $output;
-}
-
 
 /**
  * Implements hook_enable().
@@ -52,7 +41,6 @@ function sms_track_disable() {
     watchdog('sms_track', 'SMS Tracking archive collector DISABLED');
   }
 }
-
 
 /**
  * Implements hook_cron().
@@ -225,6 +213,7 @@ function sms_track_archive_write($dir, $number, $message, $options = array()) {
 
   if ($dir == 0) {
     // Outgoing message.
+  dpm($archive_dir);
     if ($archive_dir == SMS_DIR_ALL || $archive_dir == SMS_DIR_OUT) {
       $reference = (isset($options) && is_array($options) && array_key_exists('reference', $options)) ? $options['reference'] : NULL;
 
@@ -266,7 +255,6 @@ function sms_track_archive_write($dir, $number, $message, $options = array()) {
   $gw_number = (isset($options) && is_array($options) && array_key_exists('gw_number', $options)) ? $options['gw_number'] : NULL;
   $created   = REQUEST_TIME;
   $options_z = serialize($options);
-
   // Write the record to the database.
   $result = $id = db_insert('sms_track')
   ->fields(array(
@@ -323,7 +311,7 @@ function sms_track_update_message($reference, $status) {
  */
 function sms_track_views_api() {
   return array(
-    'api' => 3,
+    'api' => 3.0,
     'path' => backdrop_get_path('module', 'sms_track') . '/views',
   );
 }
@@ -349,4 +337,15 @@ function sms_track_archive_purge($max_age_days = NULL) {
     ->condition('created', $oldest, '<')
     ->execute();
   }
+}
+
+/**
+ * Implements hook_autoload_info().
+ */
+function sms_track_autoload_info() {
+  return array(
+    'sms_track_handler_field_direction' => 'views/sms_track_handler_field_direction.inc',
+    'sms_track_handler_field_gateway' => 'views/sms_track_handler_field_gateway.inc',
+    'sms_track_handler_field_local_number' => 'views/sms_track_handler_field_local_number.inc',
+  );
 }
