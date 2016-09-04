@@ -42,7 +42,8 @@ class SmsBlastWebTest extends BackdropWebTestCase {
       'code' => rand(1000, 9999),
       'gateway' => array(),
     );
-    user_save($user, array('sms_user' => $data), 'mobile');
+    $user->sms_user = $data;
+    $user->save();
 
     // Post sms blast.
     $message = $this->randomString(140);
