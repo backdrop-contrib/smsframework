@@ -9,7 +9,7 @@
  * Implements hook_config_info().
  */
 function sms_test_gateway_config_info() {
-  $prefixes['sms.test_gateway.settings'] = array(
+  $prefixes['sms.sms_test_gateway.settings'] = array(
     'label' => t('SMS Test Gateway settings'),
     'group' => t('Configuration'),
   );
@@ -44,7 +44,7 @@ function sms_test_gateway_send($number = NULL, $message = NULL, $options = array
     $result['number'] = $number;
     $result['message'] = $message;
     $result['options'] = $options;
-    config_set('sms.test_gateway.settings', 'sms_test_gateway_result', $result);
+    config_set('sms.sms_test_gateway.settings', 'sms_test_gateway_result', $result);
   }
   return array('status' => TRUE, 'result' => $result);
 }
@@ -53,12 +53,12 @@ function sms_test_gateway_result($reset = FALSE) {
   $result = &backdrop_static(__FUNCTION__);
 
   if (!isset($result)) {
-    $result = config_get('sms.test_gateway.settings', 'sms_test_gateway_result');
+    $result = config_get('sms.sms_test_gateway.settings', 'sms_test_gateway_result');
   }
 
 
   if ($reset) {
-    config_set('sms.test_gateway.settings', 'sms_test_gateway_result', NULL);
+    config_set('sms.sms_test_gateway.settings', 'sms_test_gateway_result', NULL);
     backdrop_static_reset(__FUNCTION__);
   }
   return $result;
@@ -76,7 +76,7 @@ function sms_test_gateway_sms_incoming($op, $number, $message, $options) {
     $result['number'] = $number;
     $result['message'] = $message;
     $result['options'] = $options;
-    config_set('sms.test_gateway.settings', $key, $result);
+    config_set('sms.sms_test_gateway.settings', $key, $result);
   }
 }
 
@@ -89,7 +89,7 @@ function sms_test_gateway_get_incoming($op, $reset = FALSE) {
   }
 
   if ($reset) {
-    config_set('sms.test_gateway.settings', $key, NULL);
+    config_set('sms.sms_test_gateway.settings', $key, NULL);
     backdrop_static_reset($key);
   }
   return $result;
