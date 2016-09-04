@@ -352,6 +352,7 @@ function sms_gateway_info() {
     'log' => array(
       'name' => t('Log only'),
       'send' => 'sms_send_log',
+      'module' => 'sms',
     ),
   );
 }
@@ -431,7 +432,9 @@ function _gateways_build() {
 
   $gateway_array = module_invoke_all('gateway_info');
   foreach ($gateway_array as $identifier => $info) {
-    $info['configuration'] = config_get('sms.settings', 'sms_' . $identifier . '_settings');
+    $config_name = isset($info['config_name']) ? $info['config_name'] : $info['module'] . '.settings';
+    $config = config_get($config_name, 'sms_' . $identifier . '_settings');
+    $info['configuration'] = !empty($config) ? $config : array();
     $_gateways[$identifier] = $info;
     $_names[$identifier] = $info['name'];
   }

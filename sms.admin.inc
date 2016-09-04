@@ -16,6 +16,7 @@ function sms_admin_default_form($form, &$form_state) {
     $active = ($identifier == $config->get('sms_default_gateway'));
     $options[$identifier] = '';
     $form[$gateway['name']]['id'] = array('#markup' => $identifier);
+
     if ( isset($gateway['configure form'] ) and ( function_exists($gateway['configure form'] ))) {
       $form[$gateway['name']]['configure'] = array('#markup' => l(t('configure'), 'admin/smsframework/gateways/' . $identifier));
     }
@@ -94,11 +95,13 @@ function theme_sms_admin_default_form($variables) {
  */
 function sms_admin_gateway_form($form, &$form_state, $gateway_id) {
   $gateway = sms_gateways('gateway', $gateway_id);
+
   if ($gateway && function_exists($gateway['configure form'])) {
     backdrop_set_title(t('@gateway configuration', array('@gateway' => $gateway['name'])), PASS_THROUGH);
     $form = $gateway['configure form']($gateway['configuration']);
 
-    $form['submit'] = array(
+    $form['actions']['#type'] = 'actions';
+    $form['actions']['submit'] = array(
       '#type' => 'submit',
       '#value' => t('Save'),
     );
@@ -136,10 +139,11 @@ function sms_admin_gateway_form_validate($form, &$form_state) {
 function sms_admin_gateway_form_submit($form, &$form_state) {
   $gateway = $form_state['values']['gateway'];
   $values = $form_state['values'];
+  $config_name = isset($gateway['config_name']) ? $gateway['config_name'] : $gateway['module'] . '.settings';
 
   // Remove unnecessary values
   unset($values['op'], $values['submit'], $values['gateway'], $values['form_token'], $values['form_id'], $values['form_build_id']);
-  config_set('sms.settings', 'sms_' . $gateway['identifier'] . '_settings', $values);
+  config_set($config_name, 'sms_' . $gateway['identifier'] . '_settings', $values);
   backdrop_set_message(t('The gateway settings have been saved.'));
   $form_state['redirect'] = 'admin/smsframework/gateways';
 }
@@ -352,7 +356,6 @@ function sms_carriers_delete_form_submit($form, &$form_state) {
  */
 function theme_sms_carriers_admin_form($variables) {
   $form = $variables['form'];
-dpm($form);
   $header = array(t('Enabled'), t('Carrier'), t('Domain'), t('Actions'));
 
   $rows = array();
