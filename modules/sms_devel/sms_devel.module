@@ -7,13 +7,10 @@
  * @package sms
  * @subpackage sms_devel
  */
-/*
-include BACKDROP_ROOT . '/' . 'sms_devel.send_form.inc';
-include BACKDROP_ROOT . '/' . 'sms_devel.virtualgw.inc';
-include BACKDROP_ROOT . '/' . 'sms_devel.virtualgw.admin.inc';*/
-//include 'sms_devel.send_form.inc';
+
+include 'sms_devel.send_form.inc';
 include 'sms_devel.virtualgw.inc';
-//include 'sms_devel.virtualgw.admin.inc';
+include 'sms_devel.virtualgw.admin.inc';
 
 /**
  * Implements hook_config_info().
@@ -91,6 +88,7 @@ function sms_devel_gateway_info() {
   return array(
     'virtualgw' => array(
       'name' => 'Devel virtual gateway',
+      'module' => 'sms_devel',
       'send' => 'sms_devel_virtualgw_send',
       'configure form' => 'sms_devel_virtualgw_settings_form',
     ),

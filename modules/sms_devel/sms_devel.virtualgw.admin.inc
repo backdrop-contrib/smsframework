@@ -22,8 +22,7 @@
  */
 function sms_devel_virtualgw_settings_form($configuration) {
   $form['sms_devel_virtualgw_link'] = array(
-    '#type' => 'item',
-    '#value' => 'See also: ' . l(t('Virtual Gateway dashboard'), 'admin/smsframework/devel/virtualgw'),
+    '#markup' => 'See also: ' . l(t('Virtual Gateway dashboard'), 'admin/smsframework/devel/virtualgw'),
   );
 
   return $form;
