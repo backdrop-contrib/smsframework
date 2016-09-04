@@ -8,8 +8,7 @@
 /**
  * Implements hook_config_info().
  */
-function sms_test_gateway_config_info()
-{
+function sms_test_gateway_config_info() {
   $prefixes['sms.test_gateway.settings'] = array(
     'label' => t('SMS Test Gateway settings'),
     'group' => t('Configuration'),
@@ -25,6 +24,7 @@ function sms_test_gateway_gateway_info() {
     'test' => array(
       'name' => t('For testing'),
       'send' => 'sms_test_gateway_send',
+      'module' => 'sms_test_gateway',
       'configure form' => 'sms_test_gateway_config_form',
       'delivery process' => 'sms_test_gateway_delivery_process',
       'delivery get' => 'sms_test_gateway_delivery_get',
@@ -53,7 +53,7 @@ function sms_test_gateway_result($reset = FALSE) {
   $result = &backdrop_static(__FUNCTION__);
 
   if (!isset($result)) {
-    $result = config_get('sms.sms_test_gateway.settings', 'sms_test_gateway_result');
+    $result = config_get('sms.test_gateway.settings', 'sms_test_gateway_result');
   }
 
 
@@ -98,7 +98,7 @@ function sms_test_gateway_get_incoming($op, $reset = FALSE) {
 /**
  * Form builder for configure form.
  */
-function sms_test_gateway_config_form($configuration) {
+function sms_test_gateway_config_form($configuration = array()) {
   $configuration += array(
     'ssl' => false,
     'username' => '',

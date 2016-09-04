@@ -50,6 +50,7 @@ class SmsUserWebTest extends BackdropWebTestCase {
 
     // Get the code that was sent.
     $gw_result = sms_test_gateway_result();
+    debug($gw_result);
     preg_match('/\b([0-9]{4})\b/', $gw_result['message'], $matches);
     $code = $matches[1];
     // Post the code for confirmation.

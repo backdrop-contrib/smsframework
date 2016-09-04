@@ -69,7 +69,7 @@ function sms_user_menu_alter(&$callbacks) {
   $callbacks['user/%user/edit/mobile']['page callback'] = 'sms_user_settings';
   $callbacks['user/%user/edit/mobile']['page arguments'] = array(1);
   $callbacks['user/%user/edit/mobile']['type'] = MENU_LOCAL_TASK;
-  $callbacks['user/%user/edit/mobile']['access arguments'] = array('administer users');
+  $callbacks['user/%user/edit/mobile']['access arguments'] = array('edit own sms number');
   $callbacks['user/%user/edit/mobile']['module'] = 'sms_user';
 }
 
