@@ -57,16 +57,16 @@ class SmsSendToPhoneWebTest extends BackdropWebTestCase {
     $this->assertText('Setup your mobile number to send to phone.');
 
     // Add unconfirmed phone number.
-    $edit['sms_user']['number'] = '23456897623';
-    user_save($user, $edit);
+    $user->sms_user['number'] = '23456897623';
+    $user->save();
     $this->backdropGet('user/' . $user->uid . 'edit');
     $this->backdropGet('node/' . $node->nid);
     // Confirm message for user without confirmed number.
     $this->assertText('Confirm your mobile number to send to phone.');
 
     // Confirm phone number.
-    $edit['sms_user']['status'] = 2;
-    user_save($user, $edit);
+    $user->sms_user['status'] = 2;
+    $user->save();
     $this->backdropGet('node/' . $node->nid);
     // Confirm message for user without confirmed number.
     $this->assertText('Send to phone');
@@ -83,7 +83,7 @@ class SmsSendToPhoneWebTest extends BackdropWebTestCase {
     // Click the send button there.
     $this->backdropPost('sms/sendtophone/node/1', array(), t('Send'));
     $result = sms_test_gateway_result();
-    $this->assertEqual($result['number'], $edit['sms_user']['number']);
+    $this->assertEqual($result['number'], $user->sms_user['number']);
     $this->assertEqual($result['message'], url('node/' . $node->nid, array('absolute' => true)));
   }
 
@@ -121,11 +121,9 @@ class SmsSendToPhoneWebTest extends BackdropWebTestCase {
     // Confirm link was created for Send to phone.
     $this->assertText("$node_body (Send to phone)");
     // Add confirmed phone number assert the corresponding message.
-    $edit['sms_user'] = array(
-      'number' => '97623234568',
-      'status' => 2,
-    );
-    user_save($user, $edit);
+    $user->sms_user['number'] = '97623234568';
+    $user->sms_user['status'] = 2;
+    $user->save();
     $this->clickLink('Send to phone');
     $this->assertText($node_body);
     // Submit phone number and confirm message received.
@@ -145,11 +143,9 @@ class SmsSendToPhoneWebTest extends BackdropWebTestCase {
     $this->assertText('You need to setup your mobile phone to send messages.');
 
     // Check for unconfirmed number.
-    $edit['sms_user'] = array(
-      'number' => '97623234568',
-      'status' => 1,
-    );
-    user_save($user, $edit);
+    $user->sms_user['number'] = '97623234568';
+    $user->sms_user['status'] = 1;
+    $user->save();
     $this->backdropGet('sms/sendtophone/inline');
     $this->assertText('You need to confirm your mobile phone number to send messages.');
   }
@@ -192,11 +188,9 @@ class SmsSendToPhoneWebTest extends BackdropWebTestCase {
     ));
 
     // Setup users phone number to check sending.
-    $edit['sms_user'] = array(
-      'number' => '97623234568',
-      'status' => 2,
-    );
-    user_save($user, $edit);
+    $user->sms_user['number'] = '97623234568';
+    $user->sms_user['status'] = 2;
+    $user->save();
     // Set test gateway and click send button.
     config_set('sms.settings', 'sms_default_gateway', 'test');
 
@@ -208,7 +202,7 @@ class SmsSendToPhoneWebTest extends BackdropWebTestCase {
     // Click the send button there.
     $this->backdropPost('sms/sendtophone/field', NULL, 'Send', array('query' => array('text' => $random_text)));
     $result = sms_test_gateway_result();
-    $this->assertEqual($result['number'], $edit['sms_user']['number'], 'Message sent to correct number');
+    $this->assertEqual($result['number'], $user->sms_user['number'], 'Message sent to correct number');
     $this->assertEqual($result['message'], $random_text, 'Field content sent to user with number ' . $result['number']);
   }
 

@@ -143,8 +143,7 @@ function _sms_sendtophone_filter_sms_tips($filter, $format, $long = FALSE) {
  *
  * @see sms_sendtophone_filter_info()
  */
-function _sms_sendtophone_filter_inline_settings($form, &$form_state, $filter, $format, $defaults, $filters) {
-  $filter->settings += $defaults;
+function _sms_sendtophone_filter_inline_settings($form, &$form_state, $filter, $format) {
   $elements = array();
 
   $elements["sms_sendtophone_filter_inline_display"] = array(
