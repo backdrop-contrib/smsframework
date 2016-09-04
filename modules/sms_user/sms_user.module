@@ -1057,16 +1057,18 @@ function sms_user_register_new_user($number, $message, $options) {
     'code' => '',
     'gateway' => array(),
   );
-  $account->sms_user = array_merge($account->sms_user, $sms_user);
-
-  $account->timezone = '';
 
   // If by chance there's already a user with the same email address, then use
   // it instead of creating a new user.
   if (!empty($mail) && ($account = array_shift(user_load_multiple(array(), array('mail' => $mail), TRUE)))) {
+    $account->sms_user = $sms_user;
+    $account->timezone = '';
     $account->save();
   }
   else {
+    $account = entity_create('user', array());
+    $account->sms_user = $sms_user;
+    $account->timezone = '';
     $account->mail = $account->init = $mail;
 
     // Add password if enabled.
@@ -1090,7 +1092,7 @@ function sms_user_register_new_user($number, $message, $options) {
     $account->name = substr(md5($number . strval(REQUEST_TIME)), 0, 10);
 
     // Save the user.
-    $$account->status = config_get('system.core', 'user_register') == 1;
+    $account->status = config_get('system.core', 'user_register') == 1;
     $account->save();
     watchdog('sms_user', '%name was created using SMS.', array('%name' => $account->name));
   }
