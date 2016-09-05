@@ -213,7 +213,6 @@ function sms_track_archive_write($dir, $number, $message, $options = array()) {
 
   if ($dir == 0) {
     // Outgoing message.
-  dpm($archive_dir);
     if ($archive_dir == SMS_DIR_ALL || $archive_dir == SMS_DIR_OUT) {
       $reference = (isset($options) && is_array($options) && array_key_exists('reference', $options)) ? $options['reference'] : NULL;
 

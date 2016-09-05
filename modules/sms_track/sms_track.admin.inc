@@ -93,6 +93,6 @@ function sms_track_settings_form_submit($form, &$form_state) {
  *   HTML content string.
  */
 function sms_track_admin_view() {
-  $content = views_embed_view('sms_track');
+  $content = views_embed_view('sms_track', 'view_all_block');
   return $content;
 }

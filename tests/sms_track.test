@@ -10,10 +10,10 @@ class SmsTrackWebTestCase extends BackdropWebTestCase {
    */
   public function backdropCreateAdminUser(array $permissions = array('receive sms', 'edit own sms number')) {
     $roles = user_roles();
-    $index = array_search('administrator', $roles);
     $user = $this->backdropCreateUser($permissions);
-    $user->roles[$index] = 'administrator';
-    return user_save($user);
+    $user->roles[] = 'administrator';
+    $user->save();
+    return $user;
   }
 }
 /**

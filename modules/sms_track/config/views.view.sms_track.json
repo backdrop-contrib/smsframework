@@ -1,39 +1,24 @@
 {
     "_config_name": "views.view.sms_track",
-    "db_table": "views_view",
-    "base_table": "sms_track",
-    "base_field": "nid",
     "name": "sms_track",
-    "vid": "",
-    "description": "All archived SMS messages - in and out",
+    "description": "All archived SMS messages - in and out.",
+    "module": "sms_track",
+    "storage": 2,
     "tag": "sms",
-    "human_name": "SMS Track",
-    "core": 0,
-    "api_version": "3.0",
     "disabled": false,
-    "editing": false,
-    "args": [],
-    "use_ajax": false,
-    "result": [],
-    "current_page": null,
-    "items_per_page": null,
-    "offset": null,
-    "total_rows": null,
-    "exposed_raw_input": [],
-    "old_view": [],
-    "parent_views": [],
-    "is_attachment": null,
-    "current_display": null,
-    "query": null,
-    "display_handler": null,
+    "base_table": "sms_track",
+    "human_name": "Archived messages",
+    "core": 0,
     "display": {
         "default": {
+            "display_title": "Master",
+            "display_plugin": "default",
             "display_options": {
                 "query": {
                     "type": "views_query",
                     "options": []
                 },
-                "title": "SMS Archive",
+                "title": "My Messages",
                 "use_more_always": false,
                 "access": {
                     "type": "perm",
@@ -46,59 +31,31 @@
                     "type": "basic"
                 },
                 "pager": {
-                    "type": "none"
+                    "type": "full",
+                    "options": {
+                        "items_per_page": "50",
+                        "offset": "0",
+                        "id": "0",
+                        "quantity": "9"
+                    }
                 },
                 "style_plugin": "table",
                 "style_options": {
+                    "row_class": "[dir]bound",
                     "columns": {
-                        "dir": "dir",
-                        "number": "number",
-                        "local_number": "local_number",
                         "message": "message",
-                        "created": "created",
-                        "gateway": "gateway",
                         "name": "name",
                         "name_1": "name_1",
+                        "created": "created",
+                        "dir": "dir",
+                        "gateway": "gateway",
+                        "local_number": "local_number",
+                        "number": "number",
                         "id": "id"
                     },
                     "default": "id",
                     "info": {
-                        "dir": {
-                            "sortable": 1,
-                            "default_sort_order": "asc",
-                            "align": "",
-                            "separator": "",
-                            "empty_column": 0
-                        },
-                        "number": {
-                            "sortable": 1,
-                            "default_sort_order": "asc",
-                            "align": "",
-                            "separator": "",
-                            "empty_column": 0
-                        },
-                        "local_number": {
-                            "sortable": 1,
-                            "default_sort_order": "asc",
-                            "align": "",
-                            "separator": "",
-                            "empty_column": 0
-                        },
                         "message": {
-                            "sortable": 1,
-                            "default_sort_order": "asc",
-                            "align": "",
-                            "separator": "",
-                            "empty_column": 0
-                        },
-                        "created": {
-                            "sortable": 1,
-                            "default_sort_order": "desc",
-                            "align": "",
-                            "separator": "",
-                            "empty_column": 0
-                        },
-                        "gateway": {
                             "sortable": 1,
                             "default_sort_order": "asc",
                             "align": "",
@@ -119,6 +76,41 @@
                             "separator": "",
                             "empty_column": 0
                         },
+                        "created": {
+                            "sortable": 1,
+                            "default_sort_order": "desc",
+                            "align": "",
+                            "separator": "",
+                            "empty_column": 0
+                        },
+                        "dir": {
+                            "sortable": 1,
+                            "default_sort_order": "asc",
+                            "align": "",
+                            "separator": "",
+                            "empty_column": 0
+                        },
+                        "gateway": {
+                            "sortable": 1,
+                            "default_sort_order": "asc",
+                            "align": "",
+                            "separator": "",
+                            "empty_column": 0
+                        },
+                        "local_number": {
+                            "sortable": 1,
+                            "default_sort_order": "asc",
+                            "align": "",
+                            "separator": "",
+                            "empty_column": 0
+                        },
+                        "number": {
+                            "sortable": 1,
+                            "default_sort_order": "asc",
+                            "align": "",
+                            "separator": "",
+                            "empty_column": 0
+                        },
                         "id": {
                             "sortable": 1,
                             "default_sort_order": "desc",
@@ -126,15 +118,6 @@
                             "separator": "",
                             "empty_column": 0
                         }
-                    }
-                },
-                "empty": {
-                    "text": {
-                        "id": "area",
-                        "table": "views",
-                        "field": "area",
-                        "content": "There are no SMS messages in the archive.",
-                        "format": "1"
                     }
                 },
                 "relationships": {
@@ -152,35 +135,10 @@
                     }
                 },
                 "fields": {
-                    "dir": {
-                        "id": "dir",
-                        "table": "sms_track",
-                        "field": "dir"
-                    },
-                    "number": {
-                        "id": "number",
-                        "table": "sms_track",
-                        "field": "number"
-                    },
-                    "local_number": {
-                        "id": "local_number",
-                        "table": "sms_track",
-                        "field": "local_number"
-                    },
                     "message": {
                         "id": "message",
                         "table": "sms_track",
                         "field": "message"
-                    },
-                    "created": {
-                        "id": "created",
-                        "table": "sms_track",
-                        "field": "created"
-                    },
-                    "gateway": {
-                        "id": "gateway",
-                        "table": "sms_track",
-                        "field": "gateway"
                     },
                     "name": {
                         "id": "name",
@@ -196,44 +154,96 @@
                         "relationship": "recipient",
                         "label": "Recipient"
                     },
+                    "created": {
+                        "id": "created",
+                        "table": "sms_track",
+                        "field": "created"
+                    },
+                    "dir": {
+                        "id": "dir",
+                        "table": "sms_track",
+                        "field": "dir"
+                    },
+                    "gateway": {
+                        "id": "gateway",
+                        "table": "sms_track",
+                        "field": "gateway"
+                    },
+                    "local_number": {
+                        "id": "local_number",
+                        "table": "sms_track",
+                        "field": "local_number"
+                    },
+                    "number": {
+                        "id": "number",
+                        "table": "sms_track",
+                        "field": "number"
+                    },
                     "id": {
                         "id": "id",
                         "table": "sms_track",
                         "field": "id",
                         "exclude": true
                     }
+                },
+                "arguments": {
+                    "author": {
+                        "id": "author",
+                        "table": "sms_track",
+                        "field": "author",
+                        "default_action": "default",
+                        "default_argument_type": "user",
+                        "default_argument_options": {
+                            "user": false
+                        },
+                        "summary": {
+                            "number_of_records": "0",
+                            "format": "default_summary"
+                        },
+                        "summary_options": {
+                            "items_per_page": "25"
+                        }
+                    }
                 }
-            },
-            "db_table": "views_display",
-            "vid": 0,
-            "id": "default",
-            "display_title": "Default",
-            "display_plugin": "default",
-            "position": 0
+            }
+        },
+        "page": {
+            "display_title": "Page",
+            "display_plugin": "page",
+            "display_options": {
+                "query": {
+                    "type": "views_query",
+                    "options": []
+                },
+                "path": "user/%/my-messages",
+                "menu": {
+                    "type": "tab",
+                    "title": "My Messages",
+                    "weight": "0",
+                    "name": "user-menu",
+                    "context": 0,
+                    "context_only_inline": 0
+                },
+                "tab_options": {
+                    "type": "tab",
+                    "title": "Message Tracking",
+                    "weight": "0"
+                }
+            }
+        },
+        "view_all_block": {
+            "display_title": "Block",
+            "display_plugin": "block",
+            "display_options": {
+                "query": {
+                    "type": "views_query",
+                    "options": []
+                },
+                "arguments": [],
+                "defaults": {
+                    "arguments": false
+                }
+            }
         }
-    },
-    "style_plugin": null,
-    "style_options": null,
-    "row_index": null,
-    "override_url": null,
-    "override_path": null,
-    "base_database": null,
-    "field": null,
-    "argument": null,
-    "sort": null,
-    "filter": null,
-    "relationship": null,
-    "header": null,
-    "footer": null,
-    "empty": null,
-    "export_module": "sms_track",
-    "type": "Default",
-    "export_type": 2,
-    "in_code_only": true,
-    "table": "views_view",
-    "executed": false,
-    "built": false,
-    "build_info": [],
-    "attachment_before": "",
-    "attachment_after": ""
+    }
 }
