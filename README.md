@@ -35,19 +35,20 @@ complete text.
 Maintainers
 -----------
 Ported to Backdrop by https://github.com/docwilmot
+
 Seeking maintainers
 
 Credits
 -------
 Drupal Maintainers
 
-http://drupal.org/u/almaudoh
-http://drupal.org/u/batje
-http://drupal.org/u/ekes
-http://drupal.org/u/mcpuddin
-http://drupal.org/u/univate
+- http://drupal.org/u/almaudoh
+- http://drupal.org/u/batje
+- http://drupal.org/u/ekes
+- http://drupal.org/u/mcpuddin
+- http://drupal.org/u/univate
 
 Drupal credits
 
-Will White of Development Seed (http://drupal.org/user/32237)
-Tylor Sherman of Raincity Studios (http://drupal.org/user/143420)
+- Will White of Development Seed (http://drupal.org/user/32237)
+- Tylor Sherman of Raincity Studios (http://drupal.org/user/143420)
