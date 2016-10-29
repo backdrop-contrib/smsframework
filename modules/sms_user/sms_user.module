@@ -266,22 +266,19 @@ function sms_user_settings($account) {
   $output = array();
   switch (isset($account->sms_user) ? $account->sms_user['status'] : 0) {
     case 0:
-      $output = backdrop_get_form('sms_user_settings_add_form', $account);
+      $output['number_form'] = backdrop_get_form('sms_user_settings_add_form', $account);
       break;
     case SMS_USER_PENDING:
-      $output = backdrop_get_form('sms_user_settings_confirm_form', $account);
+      $output['number_form'] = backdrop_get_form('sms_user_settings_confirm_form', $account);
       break;
     case SMS_USER_CONFIRMED:
     case SMS_USER_SMS_REGISTERED:
-      $output = backdrop_get_form('sms_user_settings_reset_form', $account);
+      $output['number_form'] = backdrop_get_form('sms_user_settings_reset_form', $account);
       break;
   }
 
   if (config_get('sms.user.settings', 'sms_user_sleep') && $account->sms_user['number'] && $account->sms_user['status'] == SMS_USER_CONFIRMED) {
-    $output2 = Array();
-    $output2['phoneform'] = $output;
-    $output2['sleepform'] = backdrop_get_form('sms_user_settings_sleep_form', $account);
-    $output = $output2;
+    $output['sleep_form'] = backdrop_get_form('sms_user_settings_sleep_form', $account);
   }
 
   if (config_get('sms.user.settings', 'sms_user_allow_opt_out') && $account->sms_user['number'] && $account->sms_user['status'] == SMS_USER_CONFIRMED) {
@@ -433,11 +430,10 @@ function sms_user_settings_reset_form($form, &$form_state, $account) {
     '#type' => 'hidden',
     '#value' => $account->uid,
   );
-  $form['sms_user']['number'] = array(
+  $form['number'] = array(
     '#type' => 'item',
     '#title' => t('Your mobile phone number'),
     '#markup' => $account->sms_user['number'],
-//    '#markup' => $account->sms_user['number'] . '@' . $account->sms_user['gateway']['carrier'],
     '#description' => t('Your mobile phone number has been confirmed.'),
   );
 
