@@ -435,6 +435,8 @@ function _gateways_build() {
     $config_name = isset($info['config_name']) ? $info['config_name'] : $info['module'] . '.settings';
     $config = config_get($config_name, 'sms_' . $identifier . '_settings');
     $info['configuration'] = !empty($config) ? $config : array();
+    // Allow other modules to alter this gateway info.
+    backdrop_alter('gateway_info', $info, $identifier);
     $_gateways[$identifier] = $info;
     $_names[$identifier] = $info['name'];
   }
