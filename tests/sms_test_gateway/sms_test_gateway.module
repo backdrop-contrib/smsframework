@@ -69,6 +69,7 @@ function sms_test_gateway_result($reset = FALSE) {
  */
 function sms_test_gateway_sms_incoming($op, $number, $message, $options) {
   // Save incoming result for later retrieval.
+  global $user;
   $key = 'sms_test_gateway_get_incoming' . $op;
   $result = &backdrop_static($key);
 
@@ -76,6 +77,7 @@ function sms_test_gateway_sms_incoming($op, $number, $message, $options) {
     $result['number'] = $number;
     $result['message'] = $message;
     $result['options'] = $options;
+    $result['uid'] = $user->uid;
     config_set('sms.sms_test_gateway.settings', $key, $result);
   }
 }
